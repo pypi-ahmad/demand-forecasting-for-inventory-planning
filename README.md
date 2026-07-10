@@ -28,7 +28,7 @@ All tracks use the **same weekly series and H=8 holdout** where compared. Metric
 |----------|---------|
 | **Portfolio / technical reviewers** | [Architecture](#1-for-portfolio-evaluators--architecture-reproducibility-evidence) · [v1 vs v2](#real-results--v1-baseline-vs-v2-production-bake-off) · [v3](#real-results--v3-advanced-stack-new) · [v4 accuracy push](#real-results--v4-accuracy-push-new) · [Limitations](#honest-limitations) |
 | **Hands-on operators** | [Installation](#2-for-hands-on-users--install-run-troubleshoot-extend) · [Run commands](#run-the-project) · [Troubleshooting](#troubleshooting) |
-| **Tutorial learners** | [Concepts](#3-for-tutorial-learners--concepts-and-implementation-flow) · [v1→v2→v3 progression](#how-we-got-better-results-summary) |
+| **Tutorial learners** | [Concepts](#3-for-tutorial-learners--concepts-and-implementation-flow) · [v1→v2→v3](#how-we-got-better-results-summary) · [v4 ladder](#full-accuracy-ladder-final-holdout-mae) |
 
 ---
 
@@ -459,10 +459,10 @@ Note: hierarchy has very low overstock but **high understock** on this peak hold
 | Question | Answer from this repo |
 |----------|------------------------|
 | Did v2 beat v1? | **Yes, dramatically** (Superstore MAE −54%; Retail −68% vs old classical). |
-| Did v3 beat v2 on MAE? | **Not on these two peak holdouts** — best univariate seasonal model was already strong. |
-| Why keep v3? | **Inventory-aware selection**, SL0.9 reorder math, hierarchy/features as **auditable competitors**, longer rolling tests, tutorial explanations for production teams. |
-| What still wins accuracy? | **Multiplicative HW with the right m** (52 Superstore, 13 Retail). |
-| What should ops order? | Prefer **SL≈0.9 quantile order** (from PI), not raw point — see inventory tables. |
+| Did v3 beat v2 on MAE? | **No** on these peak holdouts — same HW champions; v3 adds inventory/process metrics. |
+| Did v4 beat v2 on MAE? | **Yes on Superstore holdout (−22.5%)**; **yes slightly on Retail holdout (−4.6%)** via hierarchy. |
+| Why keep v3? | Inventory cost / SL0.9 orders / tutorial process layer. |
+| What should ops ship? | **v4 hierarchy holdout-best** for peak accuracy banners; **multi-window champion** for robustness; still use SL≈0.9 bands for service. |
 
 Artifacts:
 
