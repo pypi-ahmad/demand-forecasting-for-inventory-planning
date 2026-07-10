@@ -48,6 +48,11 @@ import sys
 import warnings
 from pathlib import Path
 
+# Project root on path for production package
+_ROOT = Path.cwd() if (Path.cwd() / 'pyproject.toml').exists() else Path.cwd().parent
+if str(_ROOT) not in __import__('sys').path:
+    __import__('sys').path.insert(0, str(_ROOT))
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -480,352 +485,203 @@ print(f"\n>>> PYCARET WINNER: {winner_id}")
 print(winner_row.to_string())
 
 # %% [markdown]
-# ## 6. Part 1b — Native reimplementation of the survey winner
+# ## 6. Production classical + foundation bake-off
 #
-# PyCaret's job was **model selection**. We now re-fit the winning family with
-# its native library (pmdarima / statsmodels), inspect residuals (ACF/PACF +
-# Ljung-Box), and produce a forecast with prediction intervals on the holdout.
+# Research / production practice for retail unit demand:
+#
+# 1. **Annual seasonality** on weekly series (`m=52`) often dominates short-cycle models.
+# 2. **Multiplicative Holt–Winters** handles year-end amplitude better than additive ETS with `m=4`.
+# 3. **Validation-selected ensembles** and **rolling-origin** checks beat a single lucky cut.
+# 4. **TimesFM zero-shot** remains a strong foundation baseline with quantile bands.
+#
+# PyCaret (above) is the educational survey. Below is the **production bake-off**
+# implemented in `demand_forecast/` — native statsmodels/pmdarima + TimesFM 2.5,
+# nested validation weights, holdout metrics, and rolling-origin robustness.
 
 # %%
-def fit_native_winner(
-    model_id: str,
-    train: pd.Series,
-    h: int,
-    seasonal_period: int,
-):
-    """Map PyCaret model id → native fit; return pred, lower, upper, residuals, label."""
-    mid = model_id.lower()
-    train_vals = train.astype(float)
-    index_future = train.index[-1]  # unused; we align to y_test index later
-    residuals = None
-    label = model_id
+from demand_forecast import run_production_bakeoff
+from statsmodels.stats.diagnostic import acorr_ljungbox
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from scipy import stats as scipy_stats
 
-    # --- classical families ---
-    if mid in {"auto_arima", "arima"}:
-        sp = seasonal_period if len(train_vals) >= 2 * seasonal_period else 1
-        seasonal = sp > 1
-        model = auto_arima(
-            train_vals,
-            seasonal=seasonal,
-            m=sp if seasonal else 1,
-            stepwise=True,
-            suppress_warnings=True,
-            error_action="ignore",
-            trace=False,
-            random_state=SEED,
-            n_jobs=1,
-        )
-        fc = model.predict(n_periods=h, return_conf_int=True, alpha=0.2)
-        pred = np.asarray(fc[0], dtype=float)
-        lower = np.asarray(fc[1][:, 0], dtype=float)
-        upper = np.asarray(fc[1][:, 1], dtype=float)
-        residuals = pd.Series(model.resid(), index=train_vals.index[-len(model.resid()) :])
-        label = f"pmdarima auto_arima {model.order} seasonal={model.seasonal_order}"
-        return pred, lower, upper, residuals, label, model
-
-    if mid in {"exp_smooth", "ets"}:
-        # Holt-Winters: use additive trend; seasonality if enough history
-        use_seasonal = len(train_vals) >= 2 * seasonal_period and seasonal_period > 1
-        hw = ExponentialSmoothing(
-            train_vals,
-            trend="add",
-            seasonal="add" if use_seasonal else None,
-            seasonal_periods=seasonal_period if use_seasonal else None,
-            initialization_method="estimated",
-        ).fit(optimized=True)
-        pred = np.asarray(hw.forecast(h), dtype=float)
-        # Approximate PI from residual std (ETS forecast se not always available)
-        resid = train_vals - hw.fittedvalues
-        resid = resid.dropna()
-        sigma = float(resid.std(ddof=1)) if len(resid) else 1.0
-        z = stats.norm.ppf(0.9)  # ~80% central interval
-        lower = pred - z * sigma
-        upper = pred + z * sigma
-        residuals = resid
-        label = f"statsmodels ExponentialSmoothing (seasonal={use_seasonal})"
-        return pred, lower, upper, residuals, label, hw
-
-    if mid == "theta":
-        # Simple Theta-like: SES on seasonally adjusted + drift (Hyndman-style lite)
-        # Fallback: ETS additive with no seasonal component + linear drift
-        hw = ExponentialSmoothing(
-            train_vals, trend="add", seasonal=None, initialization_method="estimated"
-        ).fit(optimized=True)
-        pred = np.asarray(hw.forecast(h), dtype=float)
-        resid = (train_vals - hw.fittedvalues).dropna()
-        sigma = float(resid.std(ddof=1)) if len(resid) else 1.0
-        z = stats.norm.ppf(0.9)
-        residuals = resid
-        label = "Theta-analogue via additive Holt (statsmodels)"
-        return pred, pred - z * sigma, pred + z * sigma, residuals, label, hw
-
-    if mid == "naive":
-        last = float(train_vals.iloc[-1])
-        pred = np.full(h, last)
-        resid = train_vals.diff().dropna()
-        sigma = float(resid.std(ddof=1)) if len(resid) else 1.0
-        z = stats.norm.ppf(0.9)
-        residuals = resid
-        label = "Naive (last value)"
-        return pred, pred - z * sigma, pred + z * sigma, residuals, label, None
-
-    if mid == "snaive":
-        sp = seasonal_period if seasonal_period > 1 else 7
-        if len(train_vals) < sp:
-            sp = max(1, len(train_vals) // 2)
-        hist = train_vals.values
-        pred = np.array([hist[-sp + (i % sp)] for i in range(h)], dtype=float)
-        # residual from one-step seasonal naive on train
-        if len(hist) > sp:
-            fitted = hist[:-sp]
-            actual = hist[sp:]
-            resid = pd.Series(actual - fitted)
-        else:
-            resid = train_vals.diff().dropna()
-        sigma = float(resid.std(ddof=1)) if len(resid) else 1.0
-        z = stats.norm.ppf(0.9)
-        residuals = resid
-        label = f"Seasonal naive (period={sp})"
-        return pred, pred - z * sigma, pred + z * sigma, residuals, label, None
-
-    if mid in {"grand_means", "polytrend"}:
-        if mid == "grand_means":
-            level = float(train_vals.mean())
-            pred = np.full(h, level)
-            fitted = pd.Series(level, index=train_vals.index)
-            label = "Grand mean"
-        else:
-            x = np.arange(len(train_vals))
-            coef = np.polyfit(x, train_vals.values, deg=1)
-            pred = np.polyval(coef, np.arange(len(train_vals), len(train_vals) + h))
-            fitted = pd.Series(np.polyval(coef, x), index=train_vals.index)
-            label = "Linear trend (poly deg=1)"
-        resid = (train_vals - fitted).dropna()
-        sigma = float(resid.std(ddof=1)) if len(resid) else 1.0
-        z = stats.norm.ppf(0.9)
-        residuals = resid
-        return pred, pred - z * sigma, pred + z * sigma, residuals, label, None
-
-    if mid == "croston":
-        # Croston-ish for intermittent demand: simple SES on non-zero demand + interval
-        # Practical fallback: auto_arima
-        print(f"Native Croston not implemented; falling back to pmdarima for id={mid}")
-        return fit_native_winner("auto_arima", train, h, seasonal_period)
-
-    # ML reduction models (*_cds_dt) or unknown → pmdarima with explicit note
-    print(
-        f"Winner '{model_id}' is not a pure classical family with a short native "
-        "reimplementation path in this tutorial. Re-fitting with pmdarima auto_arima "
-        "as the classical counterpart (documented mapping)."
-    )
-    pred, lower, upper, residuals, label, model = fit_native_winner(
-        "auto_arima", train, h, seasonal_period
-    )
-    label = f"mapped({model_id})→{label}"
-    return pred, lower, upper, residuals, label, model
-
-
-native_pred, native_lo, native_hi, native_resid, native_label, native_model = fit_native_winner(
-    winner_id, y_train, H, sp_for_exp
+prod = run_production_bakeoff(
+    y,
+    grain=GRAIN,
+    h=H,
+    seed=SEED,
+    n_rolling_origins=3,
+    include_timesfm=True,
 )
-# Align to test index; clip negative unit forecasts at 0 for inventory sense
-native_fc = pd.Series(np.clip(native_pred, 0, None), index=y_test.index, name="native_forecast")
-native_lo_s = pd.Series(native_lo, index=y_test.index)
-native_hi_s = pd.Series(native_hi, index=y_test.index)
 
-print(f"Native model: {native_label}")
-print(f"Holdout point forecast (first 5): {native_fc.head().round(1).tolist()}")
+print("=== Production notes ===")
+for note in prod.notes:
+    print(" -", note)
 
-# Residual diagnostics
-if native_resid is not None and len(native_resid.dropna()) > 10:
-    resid = native_resid.dropna()
+print("\n=== Holdout leaderboard (sorted by MASE; lower is better) ===")
+display(prod.leaderboard.round(4))
+
+champ = prod.champion
+print(f"\n>>> PRODUCTION CHAMPION: {champ.name} ({champ.kind})")
+print(f"Details: {champ.details}")
+print({k: round(v, 4) for k, v in champ.test_metrics.items()})
+print(f"PI coverage on holdout: {champ.coverage}")
+
+# Map series for plots
+champ_fc = pd.Series(champ.point, index=y_test.index, name=champ.name)
+champ_lo = pd.Series(champ.lower, index=y_test.index)
+champ_hi = pd.Series(champ.upper, index=y_test.index)
+
+# TimesFM row if present
+tfm_row = next((c for c in prod.candidates if c.name.startswith("timesfm")), None)
+native_like = next(
+    (c for c in prod.candidates if c.kind == "classical" and c.name == champ.name),
+    next((c for c in prod.candidates if c.kind == "classical"), None),
+)
+
+# Residual diagnostics on champion if classical residuals available
+if champ.residuals is not None and len(champ.residuals.dropna()) > 10:
+    resid = champ.residuals.dropna()
     fig, axes = plt.subplots(1, 3, figsize=(12, 3.2))
-    resid.plot(ax=axes[0], title="Residuals")
+    resid.plot(ax=axes[0], title="Champion residuals")
     axes[0].axhline(0, color="k", lw=0.8)
     plot_acf(resid, lags=min(24, len(resid) // 2 - 1), ax=axes[1])
     plot_pacf(resid, lags=min(24, len(resid) // 2 - 1), ax=axes[2], method="ywm")
     axes[1].set_title("Residual ACF")
     axes[2].set_title("Residual PACF")
-    plt.tight_layout()
     show_plot()
-
-    lb = acorr_ljungbox(resid, lags=[min(10, len(resid) // 5)], return_df=True)
-    print("Ljung-Box on residuals (H0: no residual autocorrelation):")
+    lb = acorr_ljungbox(resid, lags=[min(10, max(1, len(resid) // 5))], return_df=True)
+    print("Ljung-Box (champion residuals):")
     display(lb)
-    p_lb = float(lb["lb_pvalue"].iloc[0])
-    if p_lb < 0.05:
-        print(f"p={p_lb:.4f} → residual structure remains; model may be under-specified.")
-    else:
-        print(f"p={p_lb:.4f} → no strong evidence of leftover residual autocorrelation.")
 else:
-    print("Residual diagnostics skipped (insufficient residual series).")
+    print("Champion has no classical residual series (foundation/ensemble) — skip Ljung-Box.")
 
 fig, ax = plt.subplots(figsize=(11, 4))
-y_train.iloc[-min(40, len(y_train)) :].plot(ax=ax, label="train (tail)", color="steelblue")
+y_train.iloc[-min(60, len(y_train)):].plot(ax=ax, label="train (tail)", color="steelblue")
 y_test.plot(ax=ax, label="actual test", color="black", lw=2)
-native_fc.plot(ax=ax, label=f"native: {winner_id}", color="darkorange", lw=2)
-ax.fill_between(y_test.index, native_lo_s, native_hi_s, color="darkorange", alpha=0.2, label="~80% PI")
-ax.set_title(f"Part 1 native reimplementation — {native_label}")
-ax.set_ylabel("Units")
-ax.legend()
-show_plot()
-
-mase_period = sp_for_exp if len(y_train) > sp_for_exp + 5 else 1
-metrics_native = forecast_metrics(y_test.values, native_fc.values, y_train.values, mase_period)
-print("Native holdout metrics:", {k: round(v, 4) for k, v in metrics_native.items()})
-
-# %% [markdown]
-# ## 7. Part 2 — Google TimesFM 2.5 (zero-shot)
-#
-# TimesFM is a **pretrained** decoder-only time-series foundation model
-# (200M params, up to 16k context). On our series we do **not** run gradient
-# descent. The train window is passed as **inference-time context** — the model
-# still *uses* the history; it just does not update weights from it.
-#
-# That distinction matters for inventory readers: "no training" ≠ "ignoring the past."
-
-# %%
-torch.set_float32_matmul_precision("high")
-
-print("Loading TimesFM 2.5 200M (PyTorch) from Hugging Face…")
-tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained("google/timesfm-2.5-200m-pytorch")
-context_len = int(min(len(y_train), 1024))
-tfm.compile(
-    timesfm.ForecastConfig(
-        max_context=context_len,
-        max_horizon=H,
-        normalize_inputs=True,
-        use_continuous_quantile_head=True,
-        force_flip_invariance=True,
-        infer_is_positive=True,
-        fix_quantile_crossing=True,
-        per_core_batch_size=32,
+champ_fc.plot(ax=ax, label=f"champion: {champ.name}", color="darkorange", lw=2)
+ax.fill_between(y_test.index, champ_lo, champ_hi, color="darkorange", alpha=0.2, label="PI band")
+if tfm_row is not None and tfm_row.name != champ.name:
+    pd.Series(tfm_row.point, index=y_test.index).plot(
+        ax=ax, label="TimesFM 2.5", color="purple", lw=1.5, alpha=0.85
     )
-)
-
-context = y_train.values.astype(np.float32)
-point, quantiles = tfm.forecast(horizon=H, inputs=[context])
-# point: (1, H); quantiles: (1, H, 10) — idx1=q10, idx5=q50, idx9=q90
-tfm_point = np.clip(point[0], 0, None)
-tfm_lo = quantiles[0, :, 1]
-tfm_hi = quantiles[0, :, 9]
-tfm_fc = pd.Series(tfm_point, index=y_test.index, name="timesfm")
-tfm_lo_s = pd.Series(tfm_lo, index=y_test.index)
-tfm_hi_s = pd.Series(tfm_hi, index=y_test.index)
-
-print(f"Context length used: {len(context)} (max_context={context_len})")
-print(f"TimesFM point forecast (first 5): {tfm_fc.head().round(1).tolist()}")
-
-fig, ax = plt.subplots(figsize=(11, 4))
-y_train.iloc[-min(40, len(y_train)) :].plot(ax=ax, label="train (tail)", color="steelblue")
-y_test.plot(ax=ax, label="actual test", color="black", lw=2)
-tfm_fc.plot(ax=ax, label="TimesFM 2.5 zero-shot", color="purple", lw=2)
-ax.fill_between(y_test.index, tfm_lo_s, tfm_hi_s, color="purple", alpha=0.2, label="q10–q90 band")
-ax.set_title("Part 2 — TimesFM 2.5 zero-shot forecast")
+ax.set_title("Production champion forecast vs holdout")
 ax.set_ylabel("Units")
 ax.legend()
 show_plot()
 
-metrics_tfm = forecast_metrics(y_test.values, tfm_fc.values, y_train.values, mase_period)
-print("TimesFM holdout metrics:", {k: round(v, 4) for k, v in metrics_tfm.items()})
-
 # %% [markdown]
-# ## 8. Side-by-side comparison
+# ## 7. Rolling-origin robustness (production check)
 #
-# Same holdout, same metrics (MAE, RMSE, MAPE, MASE). Lower is better for all
-# four as defined here.
+# A single 8-week cut can flatter a model. We re-fit candidates on multiple
+# expanding origins and report mean MASE/MAE — closer to how ops would gate a model.
 
 # %%
-comparison = pd.DataFrame(
-    {
-        f"Native ({winner_id})": metrics_native,
-        "TimesFM 2.5 zero-shot": metrics_tfm,
-    }
-).T
-comparison = comparison[["MAE", "RMSE", "MAPE", "MASE"]]
-print("=== Holdout metrics (identical definitions) ===")
-display(comparison.round(4))
+if prod.rolling is not None and len(prod.rolling):
+    roll_mean = (
+        prod.rolling.groupby("model")[["MAE", "RMSE", "MAPE", "MASE"]]
+        .mean()
+        .sort_values("MASE")
+    )
+    print("=== Rolling-origin mean metrics ===")
+    display(roll_mean.round(4))
+    fig, ax = plt.subplots(figsize=(10, 4))
+    top = roll_mean.head(8)
+    top["MASE"].plot(kind="barh", ax=ax, color="teal")
+    ax.set_xlabel("Mean MASE across origins (lower better)")
+    ax.set_title("Rolling-origin model robustness")
+    show_plot()
+else:
+    print("No rolling-origin rows produced.")
 
-best_mase_model = comparison["MASE"].idxmin()
-print(f"\nLower MASE wins on this holdout → {best_mase_model}")
+# %% [markdown]
+# ## 8. Side-by-side: PyCaret survey vs production bake-off vs TimesFM
+#
+# Educational PyCaret winner is still reported; **shipping decision** uses the
+# production bake-off champion (validated multi-model search with proper seasonality).
+
+# %%
+# Pull key rows
+rows = {}
+rows[f"PyCaret survey winner ({winner_id}) — prior native path not re-used"] = {
+    "note": "see production table for true classical performance"
+}
+# Use leaderboard excerpt
+key_models = []
+for c in prod.candidates:
+    if c.name == champ.name or c.name.startswith("timesfm") or "seasonal_naive_m52" in c.name or "auto_arima" in c.name:
+        key_models.append(c)
+    if c.kind == "ensemble":
+        key_models.append(c)
+
+comp = prod.leaderboard.copy()
+print("Full production leaderboard:")
+display(comp.round(4))
+
+print("\n=== How to read this ===")
 print(
-    f"Native MASE={metrics_native['MASE']:.4f} vs TimesFM MASE={metrics_tfm['MASE']:.4f}"
+    f"Champion **{champ.name}** achieves holdout MASE={champ.test_metrics['MASE']:.4f}, "
+    f"MAE={champ.test_metrics['MAE']:.2f}, MAPE={champ.test_metrics['MAPE']:.2f}%."
+)
+if tfm_row is not None:
+    print(
+        f"TimesFM zero-shot MASE={tfm_row.test_metrics['MASE']:.4f}. "
+        "Foundation models shine on cold-start / many series; here a well-specified "
+        "seasonal classical model can win on a single strong retail seasonal series."
+    )
+print(
+    f"PyCaret survey (period={sp_for_exp}) selected **{winner_id}** under a short-cycle "
+    "setting for speed — that is intentional education vs production bake-off with "
+    "annual weekly seasonality candidates."
 )
 
+# Overlay top-3
 fig, ax = plt.subplots(figsize=(11, 4.5))
-y_train.iloc[-min(40, len(y_train)) :].plot(ax=ax, label="train (tail)", color="steelblue", alpha=0.8)
-y_test.plot(ax=ax, label="actual", color="black", lw=2.5)
-native_fc.plot(ax=ax, label=f"native ({winner_id})", color="darkorange", lw=2)
-tfm_fc.plot(ax=ax, label="TimesFM 2.5", color="purple", lw=2)
-ax.fill_between(y_test.index, native_lo_s, native_hi_s, color="darkorange", alpha=0.12)
-ax.fill_between(y_test.index, tfm_lo_s, tfm_hi_s, color="purple", alpha=0.12)
-ax.set_title("Overlay: actual vs native winner vs TimesFM")
+y_train.iloc[-min(40, len(y_train)):].plot(ax=ax, color="steelblue", alpha=0.7, label="train tail")
+y_test.plot(ax=ax, color="black", lw=2.5, label="actual")
+for c in sorted(prod.candidates, key=lambda x: x.test_metrics["MASE"])[:3]:
+    pd.Series(c.point, index=y_test.index).plot(ax=ax, lw=2, label=f"{c.name}")
+ax.set_title("Top-3 production candidates vs actual holdout")
 ax.set_ylabel("Units")
 ax.legend()
 show_plot()
 
-# Dynamic interpretation
-native_better = metrics_native["MASE"] < metrics_tfm["MASE"]
-print("\n=== Why this result is plausible ===")
-if native_better:
-    print(
-        f"The PyCaret-selected native model ({winner_id} → {native_label}) achieved "
-        f"lower MASE on this Superstore {GRAIN} series. Classical models can exploit "
-        f"domain-specific seasonality/trend when the series is relatively regular and "
-        f"the train window is long enough for parameter estimation "
-        f"(n_train={len(y_train)}, H={H}). TimesFM still used the full train context "
-        f"zero-shot, but without Superstore-specific coefficient fitting."
-    )
-else:
-    print(
-        f"TimesFM 2.5 zero-shot achieved lower MASE than the native reimplementation of "
-        f"{winner_id}. Foundation models can transfer patterns from large multi-series "
-        f"pretraining when local seasonality is weak, noisy, or when the classical model "
-        f"is misspecified. History was still provided as context (len={len(y_train)})."
-    )
+# Persist metrics
+results_dir = _ROOT / "data" / "results"
+results_dir.mkdir(parents=True, exist_ok=True)
+out_path = results_dir / "superstore_production_metrics.csv"
+comp.to_csv(out_path)
+print(f"Wrote {out_path}")
 
 # %% [markdown]
-# ## 9. Inventory-planning takeaway
-#
-# We close with a **directional** planning read — not a formal safety-stock formula.
+# ## 9. Inventory-planning takeaway (production posture)
 
 # %%
-mean_fc_native = float(native_fc.mean())
-mean_fc_tfm = float(tfm_fc.mean())
 mean_actual = float(y_test.mean())
-# Prefer the lower-MASE model for planning narrative; still show both bands
-if native_better:
-    plan_fc, plan_lo, plan_hi, plan_name = native_fc, native_lo_s, native_hi_s, f"native/{winner_id}"
-else:
-    plan_fc, plan_lo, plan_hi, plan_name = tfm_fc, tfm_lo_s, tfm_hi_s, "TimesFM 2.5"
+avg_point = float(champ_fc.mean())
+avg_lo = float(champ_lo.mean())
+avg_hi = float(champ_hi.mean())
+# Service-oriented reorder signal: use upper band or point + residual sigma
+service_units = float(np.maximum(champ_fc, champ_hi * 0.0 + champ_fc).mean())  # placeholder
+# Prefer mean of upper PI as conservative weekly intake signal
+conservative = float(champ_hi.mean())
 
-avg_point = float(plan_fc.mean())
-avg_lo = float(plan_lo.mean())
-avg_hi = float(plan_hi.mean())
-band_width = avg_hi - avg_lo
-
-print("=== Inventory-facing summary (from this run) ===")
-print(f"Grain: {GRAIN} | holdout periods: {H}")
-print(f"Actual mean demand in holdout: {mean_actual:.1f} units / period")
-print(f"Preferred model for narrative: {plan_name}")
-print(f"  mean point forecast: {avg_point:.1f}")
-print(f"  mean lower band:     {avg_lo:.1f}")
-print(f"  mean upper band:     {avg_hi:.1f}")
-print(f"  mean band width:     {band_width:.1f}")
+print("=== Inventory-facing summary (production champion) ===")
+print(f"Grain: {GRAIN} | H={H} | champion={champ.name}")
+print(f"Holdout mean actual demand: {mean_actual:.1f} units / week")
+print(f"Champion mean point forecast: {avg_point:.1f}")
+print(f"Champion mean PI lower/upper: {avg_lo:.1f} / {avg_hi:.1f}")
+print(f"MASE={champ.test_metrics['MASE']:.4f} | MAE={champ.test_metrics['MAE']:.2f} | bias={champ.test_metrics['bias']:.2f}")
 print()
 print(
-    f"If you plan replenishment around the point forecast (~{avg_point:.0f} units per {GRAIN[:-2] if GRAIN.endswith('ly') else GRAIN}), "
-    f"the uncertainty band (~{avg_lo:.0f}–{avg_hi:.0f}) is a practical envelope for a "
-    f"service-minded buffer: covering toward the upper end reduces stockout risk when "
-    f"demand spikes, at the cost of extra on-hand inventory. "
-    f"Compared with a pure point order of {avg_point:.0f}, targeting closer to "
-    f"{avg_hi:.0f} is the more conservative (higher service level) posture suggested by "
-    f"this model's predictive distribution — not a full EOQ/safety-stock calculation, "
-    f"but a directionally useful reorder signal from the forecast + interval."
+    f"Ops read: plan baseline replenishment near **{avg_point:.0f} units/week**, "
+    f"with a service-minded envelope up to ~**{avg_hi:.0f}** (upper PI). "
+    f"Actual holdout averaged {mean_actual:.0f}, so a pure point policy would have "
+    f"{'under' if avg_point < mean_actual else 'over'}-served this window by "
+    f"{abs(mean_actual - avg_point):.0f} units/week on average. "
+    f"Bias={champ.test_metrics['bias']:.1f} (negative ⇒ under-forecast). "
+    "This is directional safety-buffer guidance, not a full (Q,R) policy."
 )
 print()
-print("Metric recap:")
-display(comparison.round(4))
-print(f"\nGranularity decision was: {decision_reason}")
-print(f"PyCaret winner: {winner_id} | Native label: {native_label}")
-print("Notebook 01 complete.")
+print(decision_reason)
+print(f"PyCaret educational winner: {winner_id} | Production champion: {champ.name}")
+print("Notebook 01 complete (production bake-off).")
