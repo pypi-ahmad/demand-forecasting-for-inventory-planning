@@ -493,17 +493,16 @@ Package: `demand_forecast/accuracy_push/` (`hierarchy_safe.py`, `pipeline.py`).
 |-------|------|-----:|---------:|-----:|
 | v1-like HW mul m=4 | old classical | 106.60 | 27.27 | 1.780 |
 | v2 HW mul m=52 | previous best | 48.12 | 11.44 | 0.803 |
-| **v4 holdout-best: `bu_category_region_volscaled`** | **Category×Region bottom-up, volume-scaled** | **37.29** | **~8.9*** | **~0.62*** |
-| v4 multi-window champion: `bu_region` | best mean MAE across 6 origins | 47.94 | ~11.7 | ~0.80 |
-
-\*Exact MAPE/MASE for holdout-best: see `data/results/superstore_v4_holdout.csv` (MAE **37.2868**).
+| **v4 holdout-best: `bu_category_region_volscaled`** | **Category×Region bottom-up, volume-scaled** | **37.29** | **8.93** | **0.623** |
+| v4 multi-window champion: `bu_region` | best mean MAE across 6 origins | 47.94 | (see multiwindow CSV) | (see CSV) |
 
 **vs v2 on Superstore holdout (holdout-best hierarchy):**
 
 | Metric | v2 | **v4 holdout-best** | Change |
 |--------|----:|--------------------:|-------:|
 | MAE | 48.12 | **37.29** | **−22.5%** |
-| MAPE | 11.44% | **~8.9%** | **≈ −22%** |
+| MAPE | 11.44% | **8.93%** | **−22.0%** |
+| MASE | 0.803 | **0.623** | **−22.4%** |
 
 **Multi-window top-3 (mean MAE):** `bu_region` 41.6 · `bu_category_region_volscaled` 42.1 · `bu_category_region_blend50` 42.7  
 (all better than multi-window mean of `hw_mul_m52` ≈ 44.0)
