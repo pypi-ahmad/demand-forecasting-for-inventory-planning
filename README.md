@@ -474,77 +474,145 @@ Artifacts:
 
 ## Real results — v4 accuracy push (new)
 
-**Notebooks 05 / 06** implement the accuracy-focused follow-ups (better hierarchy + multi-window selection + residual calendar) **without editing** 01–04.
+**Notebooks 05 / 06** add the accuracy-focused follow-ups **without editing** notebooks 01–04 or removing any v1/v2/v3 numbers above.  
+Same weekly series, same **H=8** final holdout. Metrics from real runs in `data/results/*_v4_*.csv`.
 
-### What v4 changes vs v3
+### What is new in v4 (and why)
 
-| v3 issue | v4 fix |
-|----------|--------|
-| Hierarchy often **exploded** or lost to HW on MAE | Explosion-safe bottoms (cap 3× hist max; additive if sparse zeros) |
-| Single-cut / dual cost gate didn’t beat v2 MAE | **Category×Region** bottom-up + **volume scaling** to total |
-| Val-selected single period could miss holdout best | Fit many models; rank by **mean MAE over 6 rolling origins** |
-| Optional TimesFM XReg needed heavy JAX | Residual **Ridge calendar/promo** correction without JAX |
+| New technique | Implementation | Why it can beat v2 univariate HW |
+|---------------|----------------|----------------------------------|
+| **Safe hierarchical bottom-up** | Forecast each **Category**, **Region**, or **Category×Region** (Superstore) / **Country** (Retail), then **sum** | Bottoms have different seasonal shapes; the total is a mixture |
+| **Explosion caps** | Cap each bottom at **3× historical max** (or 5× recent mean); use **additive** HW if zero-share &gt; 15% | Stops mul-HW blow-ups that ruined v3 hierarchy |
+| **Volume scaling** | `bu * (sum(HW_total) / sum(bu))` over the horizon | Aligns hierarchical volume to a sensible total level |
+| **50/50 blend** | `0.5 * HW_total + 0.5 * volscaled_bu` | Hedge between top-level level and bottom structure |
+| **Calendar residual (Ridge)** | HW forecast + Ridge on holiday/week/promo residual | Peak weeks partly driven by calendar (no JAX XReg needed) |
+| **Multi-window selection** | Rank by **mean MAE over 6 rolling origins**, then score on final holdout | Avoid shipping a model that only wins one holiday cut |
 
-Package: `demand_forecast/accuracy_push/` (`hierarchy_safe.py`, `pipeline.py`).
+Package: `demand_forecast/accuracy_push/` (`hierarchy_safe.py`, `pipeline.py`).  
+Tutorials: `notebooks/05_superstore_accuracy_push.py`, `06_online_retail_ii_accuracy_push.py`.
 
-### Superstore (notebook 05) — **accuracy improved**
+**Two champion definitions (both reported):**
 
-| Model | Role | MAE | MAPE (%) | MASE |
-|-------|------|-----:|---------:|-----:|
-| v1-like HW mul m=4 | old classical | 106.60 | 27.27 | 1.780 |
-| v2 HW mul m=52 | previous best | 48.12 | 11.44 | 0.803 |
-| **v4 holdout-best: `bu_category_region_volscaled`** | **Category×Region bottom-up, volume-scaled** | **37.29** | **8.93** | **0.623** |
-| v4 multi-window champion: `bu_region` | best mean MAE across 6 origins | 47.94 | (see multiwindow CSV) | (see CSV) |
+1. **Multi-window champion** — best **mean MAE across 6 origins** (robustness).  
+2. **Holdout-best** — best MAE on the **final** H=8 peak window (banner accuracy).
 
-**vs v2 on Superstore holdout (holdout-best hierarchy):**
+---
 
-| Metric | v2 | **v4 holdout-best** | Change |
-|--------|----:|--------------------:|-------:|
-| MAE | 48.12 | **37.29** | **−22.5%** |
-| MAPE | 11.44% | **8.93%** | **−22.0%** |
-| MASE | 0.803 | **0.623** | **−22.4%** |
+### Superstore (notebook 05) — accuracy **improved**
 
-**Multi-window top-3 (mean MAE):** `bu_region` 41.6 · `bu_category_region_volscaled` 42.1 · `bu_category_region_blend50` 42.7  
-(all better than multi-window mean of `hw_mul_m52` ≈ 44.0)
+#### Holdout leaderboard (selected; full: `superstore_v4_holdout.csv`)
 
-**How to read:** On the **final peak holdout**, Category×Region + volume scaling is the accuracy winner (**−22.5% MAE**). Multi-window selection prefers pure `bu_region` (slightly more robust on average). Report **both** in production.
+| Model | MAE | RMSE | MAPE (%) | MASE | bias | under_units | over_units |
+|-------|-----:|-----:|---------:|-----:|-----:|------------:|-----------:|
+| **bu_category_region_volscaled** (holdout-best) | **37.29** | **53.30** | **8.93** | **0.623** | −13.8 | 204.4 | 93.9 |
+| bu_category_region_blend50 | 41.60 | 56.60 | 9.84 | 0.695 | −13.8 | 221.7 | 111.2 |
+| bu_category_region (raw sum) | 42.33 | 58.29 | 9.79 | 0.707 | −25.5 | 271.2 | 67.4 |
+| bu_category | 47.24 | 60.48 | 11.27 | 0.789 | −9.9 | 228.5 | 149.4 |
+| **bu_region** (multi-window champion) | **47.94** | **56.87** | **11.74** | **0.800** | **−8.6** | 226.1 | 157.4 |
+| **v2 reference: hw_mul_m52** | 48.12 | 61.40 | 11.44 | 0.803 | −13.8 | 247.7 | 137.2 |
+| timesfm_zeroshot | 78.84 | 93.50 | 18.39 | 1.316 | −57.2 | 544.3 | 86.4 |
+| hw_mul_m4 (v1-like) | 106.60 | 119.63 | 27.27 | 1.780 | −55.0 | 646.3 | 206.5 |
+
+#### Multi-window mean scores (6 origins; selection key)
+
+| Model | Mean MAE | Mean MASE | Mean MAPE |
+|-------|---------:|----------:|----------:|
+| **bu_region** (MW champion) | **41.58** | 0.713 | 19.79 |
+| bu_category_region_volscaled | 42.14 | 0.724 | 19.05 |
+| bu_category_region_blend50 | 42.68 | 0.733 | 19.22 |
+| bu_category | 43.49 | 0.747 | 19.87 |
+| hw_mul_m52 (v2) | 43.95 | 0.755 | 19.81 |
+| timesfm_zeroshot | 49.24 | 0.843 | 19.72 |
+
+#### Superstore head-to-head (final holdout)
+
+| Metric | v1-like m=4 | v2 HW m=52 | **v4 holdout-best** | **v4 MW champion** |
+|--------|------------:|-----------:|--------------------:|-------------------:|
+| MAE | 106.60 | 48.12 | **37.29** | 47.94 |
+| RMSE | 119.63 | 61.40 | **53.30** | 56.87 |
+| MAPE (%) | 27.27 | 11.44 | **8.93** | 11.74 |
+| MASE | 1.780 | 0.803 | **0.623** | 0.800 |
+| vs v2 MAE | − | — | **−22.5%** | **−0.4%** |
+
+**Interpretation:** On the **peak final holdout**, Category×Region + volume scaling is a clear accuracy win (**MAE 37.3 vs 48.1**). Multi-window selection prefers **region-level** bottom-up as slightly more stable across cuts. Production should log **both**.
+
+---
 
 ### Online Retail II (notebook 06) — modest holdout gain
 
-| Model | MAE | MAPE (%) | MASE |
-|-------|-----:|---------:|-----:|
-| v2 HW mul m=13 | 22,453 | 11.91 | 0.561 |
-| **v4 holdout-best: `bu_country`** | **21,420** | **~12.0** | **0.535** |
-| v4 multi-window champion: `hw_mul_m8` | 27,624 | 13.88 | 0.691 |
+#### Holdout leaderboard (selected; `online_retail_ii_v4_holdout.csv`)
 
-**vs v2 (holdout-best country hierarchy):** MAE **−4.6%** (21,420 vs 22,453).  
-Multi-window mean prefers shorter HW (`m=8`) / TimesFM — use for robustness, not as the single peak-holdout banner metric.
+| Model | MAE | RMSE | MAPE (%) | MASE | bias |
+|-------|-----:|-----:|---------:|-----:|-----:|
+| **bu_country** (holdout-best) | **21,420** | **26,725** | **12.02** | **0.535** | −11,769 |
+| **v2 reference: hw_mul_m13** | 22,453 | 29,926 | **11.91** | 0.561 | −18,411 |
+| hw_mul_m8 | 27,624 | 41,807 | 13.88 | 0.691 | −23,467 |
+| timesfm_zeroshot | 31,732 | 40,347 | 16.88 | 0.793 | −27,766 |
 
-### Full accuracy ladder (holdout MAE)
+#### Multi-window mean scores (6 origins)
 
-| Dataset | v1 classical | v1 TimesFM | v2 HW | **v4 holdout-best hierarchy** |
-|---------|-------------:|-----------:|------:|------------------------------:|
+| Model | Mean MAE | Mean MASE |
+|-------|---------:|----------:|
+| **hw_mul_m8** (MW champion) | **19,710** | **0.427** |
+| timesfm_zeroshot | 20,517 | 0.443 |
+| hw_mul_m4 | 20,756 | 0.453 |
+| hw_mul_m13 (v2) | 22,552 | 0.480 |
+| bu_country | 29,045 | 0.612 |
+
+#### Retail II head-to-head (final holdout)
+
+| Metric | v2 HW m=13 | **v4 holdout-best bu_country** | **v4 MW hw_mul_m8** |
+|--------|-----------:|-------------------------------:|--------------------:|
+| MAE | 22,453 | **21,420 (−4.6%)** | 27,624 (+23%) |
+| MAPE (%) | **11.91** | 12.02 (+0.9% rel.) | 13.88 |
+| MASE | 0.561 | **0.535 (−4.6%)** | 0.691 |
+| bias | −18,411 | **−11,769** (less under-forecast) | −23,467 |
+
+**Interpretation:** Country hierarchy **slightly beats** v2 on the peak holdout (MAE and bias). Multi-window prefers **shorter HW / TimesFM** — hierarchy is less stable across all cuts on this short panel (~106 weeks). Again: report **holdout-best and MW champion** separately.
+
+---
+
+### Full accuracy ladder (final holdout MAE)
+
+| Dataset | v1 classical | v1 TimesFM | v2 HW | **v4 holdout-best** |
+|---------|-------------:|-----------:|------:|--------------------:|
 | Superstore | 104.8 | 78.8 | 48.1 | **37.3** |
 | Online Retail II | 69,829 | 31,732 | 22,453 | **21,420** |
 
 ```text
-v1 short-cycle  ──►  v2 seasonal HW  ──►  v4 hierarchical bottoms
-     large jump            large jump         Superstore −22% MAE
-                                              Retail     −4.6% MAE
+v1 short-cycle survey     large error on peaks
+        │
+        ▼
+v2 multiplicative HW + period search     Superstore −54% MAE vs v1 ETS
+        │                                 Retail −68% MAE vs v1 ARIMA
+        ▼
+v3 process layer (inventory cost, stacks)  same accuracy champions as v2
+        │
+        ▼
+v4 safe hierarchy + multi-window          Superstore holdout −22.5% vs v2
+                                          Retail holdout −4.6% vs v2
 ```
 
-### Why hierarchy finally helps (when done safely)
+### Why v4 improves accuracy (when it does)
 
-1. **Bottoms have different seasons** — e.g. Technology vs Furniture, West vs South.  
-2. **Summing forecasts** recovers total with that structure.  
-3. **Caps + additive on sparse series** stop multiplicative blow-ups (v3 failure mode).  
-4. **Volume scaling** aligns hierarchical sum to a sensible total level when raw sum drifts.  
-5. **Multi-window selection** avoids shipping a model that only wins one holiday cut.
+1. **Mixture-of-seasons problem** — a national total averages incompatible seasonal patterns; forecasting **Category×Region** (or Country) then summing restores structure.  
+2. **Safety engineering** — caps + additive on sparse bottoms fix the v3 hierarchy blow-ups.  
+3. **Volume scaling** — if raw bottom-up drifts in level, scale the shape to the total HW volume (Superstore: raw 42.3 → volscaled **37.3** MAE).  
+4. **Multi-window honesty** — MW champion can differ from holdout-best; shipping only the peak-cut winner overfits one holiday window.  
+5. **v2 is still in the candidate set** — hierarchy must **beat** HW mul, not replace it by assumption.
+
+### How to read all four generations together
+
+| Generation | Best accuracy story | What it taught |
+|------------|---------------------|----------------|
+| **v1** | TimesFM beat short-cycle ETS/ARIMA | Survey + foundation baseline |
+| **v2** | HW mul with right **m** crushed both | Seasonality period is first-class |
+| **v3** | Same accuracy as v2; better **ops metrics** | Inventory cost / SL0.9 orders |
+| **v4** | **Hierarchy beats v2 on Superstore holdout (−22% MAE)**; small Retail gain | Safe bottom-up + multi-window selection |
 
 Artifacts:  
 - `data/results/superstore_v4_holdout.csv`, `superstore_v4_multiwindow.csv`, `superstore_v1_v2_v4_compare.csv`  
 - `data/results/online_retail_ii_v4_holdout.csv`, `online_retail_ii_v4_multiwindow.csv`, `online_retail_ii_v2_v4_compare.csv`
-
 ---
 
 ## Honest limitations
