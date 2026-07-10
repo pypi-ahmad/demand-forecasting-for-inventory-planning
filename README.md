@@ -535,6 +535,7 @@ print(pycaret.__version__, hasattr(timesfm, 'TimesFM_2p5_200M_torch'),
 ### A. Fully re-execute notebooks (recommended for “real outputs”)
 
 ```bash
+# v1+v2 learning notebooks (leave as historical baseline after first good run)
 uv run jupyter nbconvert --to notebook --execute \
   notebooks/01_superstore_demand_forecast.ipynb \
   --output 01_superstore_demand_forecast.ipynb \
@@ -546,7 +547,13 @@ uv run jupyter nbconvert --to notebook --execute \
   --output 02_online_retail_ii_demand_forecast.ipynb \
   --ExecutePreprocessor.timeout=3600 \
   --ExecutePreprocessor.kernel_name=demand-forecast-project
+
+# v3 advanced tutorials (new techniques; do not replace 01/02)
+uv run python notebooks/03_superstore_advanced_demand_forecast.py
+uv run python notebooks/04_online_retail_ii_advanced_demand_forecast.py
+# optional: jupytext --to ipynb + nbconvert execute for 03/04
 ```
+
 
 ### B. Interactive
 
@@ -810,10 +817,10 @@ Notebooks print actual mean demand, preferred model’s mean point, and mean ban
 | `uv sync` env Python 3.13.13 | OK |
 | Kernel `demand-forecast-project` | OK |
 | TimesFM system check | READY (GPU) |
-| NB01 executed, 9 figures, 0 errors | OK |
-| NB02 executed, 9 figures, 0 errors | OK |
-| README metrics match notebook streams | OK (v1 + v2 tables above) |
+| NB01 / NB02 executed (v1+v2) | OK |
+| NB03 / NB04 advanced scripts (v3) | OK (real metrics in `data/results/*_v3_*.csv`) |
+| README metrics match notebook streams | OK (v1 + v2 + v3 tables) |
 | MIT `LICENSE` present | OK |
-| Production CSVs under `data/results/` | OK |
+| Result CSVs under `data/results/` | OK |
 
-For a clean re-verification after changes: re-run both `nbconvert --execute` commands and diff the holdout metric dicts against [v1 vs v2 real results](#real-results--v1-baseline-vs-v2-production-bake-off).
+Re-verify: re-run notebook commands and diff metrics against [v1 vs v2](#real-results--v1-baseline-vs-v2-production-bake-off) and [v3](#real-results--v3-advanced-stack-new).
