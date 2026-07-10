@@ -167,128 +167,195 @@ point, quantiles = model.forecast(horizon=H, inputs=[train_float32_1d])
 
 ---
 
-## Production upgrade (research-backed)
+## Real results — v1 baseline vs v2 production bake-off
 
-After literature / practice review (retail seasonality, TSFM zero-shot ops patterns, MASE + rolling-origin gating), the project now ships a **production bake-off** package:
+All numbers below come from **fully executed notebooks** on this machine (Python 3.13.13, PyCaret 4.0.0a8, TimesFM 2.5, torch CUDA on RTX 4060).  
+**Same data, same weekly grain, same last-H=8 holdout** for fair comparison. We **keep v1 results** and add v2 side-by-side.
 
-| Component | Role |
-|-----------|------|
-| `demand_forecast/classical.py` | Seasonal naive, Holt–Winters add/mul over **data-driven periods** (4/8/13/26/52), bounded `auto_arima` |
-| `demand_forecast/timesfm_runner.py` | TimesFM 2.5 zero-shot with `normalize_inputs`, continuous quantile head, `infer_is_positive` |
-| `demand_forecast/bakeoff.py` | Nested val MAE → inverse-weight ensemble, holdout leaderboard, **rolling-origin** robustness |
-| `demand_forecast/metrics.py` | MAE, RMSE, MAPE, sMAPE, MASE, bias, PI coverage |
+Shared data facts (unchanged between v1 and v2):
 
-**Why results improved**
-
-1. **Annual / multi-cycle seasonality** — short-cycle PyCaret survey (`m=4`) is educational/fast; production searches periods that fit ≥2 cycles (e.g. weekly `m=52` Superstore, `m=13` Retail II).  
-2. **Multiplicative HW** — year-end amplitude scales with level; additive ETS under-shot peaks.  
-3. **Rolling-origin** — model gate uses multiple cuts, not one lucky window.  
-4. **Honest separation** — PyCaret = survey; bake-off = shipping decision.
-
-CSV artifacts: `data/results/superstore_production_metrics.csv`, `data/results/online_retail_ii_production_metrics.csv`.
+| | Superstore | Online Retail II |
+|--|------------|------------------|
+| Rows after clean | 9,994 / 9,994 | 1,041,670 / 1,067,371 |
+| Grain | Weekly (daily zero-days 15.2%) | Weekly (daily zero-days 18.3%) |
+| Series length | 209 weeks | 106 weeks |
+| Train / test | 201 / **8** | 98 / **8** |
+| Train → test mean units/week | 172.4 → **403.4** (year-end peak) | 102,308 → **174,261** (peak ramp) |
 
 ---
 
-## Real results (this run — production bake-off)
+### What changed technically (v1 → v2)
 
-Numbers from **fully executed** notebooks after the production upgrade (GPU TimesFM, live Superstore, UCI zip Retail II).
+| | **v1 baseline (first ship)** | **v2 production bake-off (current)** |
+|--|------------------------------|--------------------------------------|
+| Classical path | PyCaret short-cycle survey (`seasonal_period=4`) → re-fit winner only (ETS / low-order ARIMA) | Multi-model **bake-off** over seasonal periods that fit ≥2 cycles: **m ∈ {4, 8, 13, 26, 52}** |
+| Smoothing form | Mostly additive / short-season ETS | **Multiplicative Holt–Winters** (`trend=add`, `seasonal=mul`) when positive demand |
+| Foundation path | TimesFM 2.5 zero-shot (point + q10–q90) | Same TimesFM 2.5, production flags: `normalize_inputs`, continuous quantile head, `infer_is_positive`, `fix_quantile_crossing` |
+| Model selection | One PyCaret MASE leaderboard | Holdout leaderboard **+** nested val MAE **+** inverse-MAE ensemble **+** **rolling-origin** (3 cuts) |
+| Metrics | MAE, RMSE, MAPE, MASE | + sMAPE, bias, PI coverage; CSVs under `data/results/` |
+| Code | Inline notebook functions | Package `demand_forecast/` (`classical`, `timesfm_runner`, `bakeoff`, `metrics`) |
 
-### Notebook 1 — Superstore Sales
+**Why these techniques improve retail unit demand**
 
-| Stage | Observed |
-|-------|----------|
-| Clean keep rate | **9,994 / 9,994** |
-| **Granularity** | **WEEKLY** (daily zero-days 15.2%; CV 0.98 vs weekly 0.57) |
-| Weekly n / holdout | 209 weeks; train 201 / test **H=8** (year-end peak) |
-| Train → test mean demand | **172.4 → 403.4** units/week |
-| PyCaret educational survey | **`ets`** (short-cycle `m=4`) |
-| **Production champion** | **`holt_winters_mul_m52`** (multiplicative HW, annual seasonality) |
-
-**Holdout leaderboard (selected rows)**
-
-| Model | MAE | RMSE | MAPE (%) | MASE | Notes |
-|-------|-----:|-----:|---------:|-----:|-------|
-| **holt_winters_mul_m52 (champion)** | **48.12** | **61.40** | **11.44** | **0.803** | Ljung-Box p≈0.22 |
-| holt_winters_mul_m26 | 54.25 | 72.06 | — | 0.906* | *rank #2 |
-| holt_winters_add_m52 | 57.57 | 78.78 | — | 0.961 |
-| TimesFM 2.5 zero-shot | 78.84 | 93.50 | 18.39 | 1.316 | Best PI coverage (~0.88) |
-| seasonal_naive_m52 | 80.00 | 119.29 | 17.16 | 1.336 | Strong baseline |
-| ~~Prior short-cycle ETS (m=4)~~ | ~~104.84~~ | ~~119.45~~ | ~~26.61~~ | ~~1.316~~ | Pre-upgrade path |
-
-\*Exact intermediate rows in notebook / CSV.
-
-**Before → after (same holdout, Superstore)**
-
-| Metric | Old ETS m≈4 path | **Production HW mul m=52** | Improvement |
-|--------|-----------------:|---------------------------:|------------:|
-| MAE | 104.84 | **48.12** | **−54%** |
-| MAPE | 26.61% | **11.44%** | **−57%** |
-| MASE | 1.316 | **0.803** | **−39%** |
-
-**Rolling-origin mean MASE (3 origins):** champion family `holt_winters_mul_m52` **0.764** (still best among classical + TimesFM).
-
-**Inventory read (champion):** point ≈ **390** units/week; PI ≈ **338–441**; actual mean **403**. Bias ≈ **−14** (slight under-forecast). Service-minded cover toward upper PI (~**441**).
+1. **Seasonal period search** — Short cycles (`m=4`) miss **annual** retail peaks. Superstore needs ~`m=52`; Retail II (shorter history) wins with ~`m=13` (quarterly weeks), not forced `m=52` when train &lt; 2×52.  
+2. **Multiplicative seasonality** — Peak weeks scale with level (holiday / year-end). Additive ETS under-forecasted both holdouts.  
+3. **Seasonal naive baseline** — Always in the bake-off; prevents “complex but worse” models from shipping.  
+4. **Rolling-origin** — One lucky 8-week cut is not production gating; v2 re-fits over multiple origins.  
+5. **TimesFM kept as peer, not assumed winner** — Strong on multi-series / cold-start ops; on these **single** seasonal aggregates, a well-specified HW often wins holdout.  
+6. **PyCaret retained for teaching** — Fast OOP survey (v1-style); **shipping decision** uses the bake-off champion.
 
 ---
 
-### Notebook 2 — Online Retail II (UCI 502)
+### Notebook 1 — Superstore: old vs new
 
-| Stage | Observed |
-|-------|----------|
-| Acquisition | `ucimlrepo` 502 unavailable → official UCI zip (both Excel years) |
-| Clean rows | **1,041,670** / 1,067,371 |
-| **Granularity** | **WEEKLY** (daily zero-days 18.3%) |
-| Weekly n / holdout | 106 weeks; train 98 / test H=8 |
-| Train → test mean | **102,308 → 174,261** units/week |
-| PyCaret educational survey | **`arima`** (short-cycle) |
-| **Production champion (holdout)** | **`holt_winters_mul_m13`** |
+#### v1 baseline results (preserved)
 
-**Holdout leaderboard (selected)**
+PyCaret survey winner: **`ets`** (CV MASE 0.7146).  
+Native re-fit: short-cycle Exponential Smoothing. TimesFM zero-shot on the same holdout.
 
-| Model | MAE | RMSE | MAPE (%) | MASE |
-|-------|-----:|-----:|---------:|-----:|
-| **holt_winters_mul_m13** | **22,453** | **29,926** | **11.91** | **0.561** |
-| holt_winters_mul_m8 | 27,624 | 41,807 | 13.9 | 0.691 |
-| seasonal_naive_m52 | 27,724 | 38,596 | 16.59 | 0.693 |
-| TimesFM 2.5 zero-shot | 31,732 | 40,347 | 16.88 | 0.793 |
-| ~~Prior auto_arima m=4~~ | ~~69,829~~ | ~~76,436~~ | ~~38.52~~ | ~~1.825~~ |
+| Model (v1) | MAE | RMSE | MAPE (%) | MASE |
+|------------|-----:|-----:|---------:|-----:|
+| Native ETS (short-cycle / m≈4 path) | 104.84 | 119.45 | 26.61 | 1.3164 |
+| TimesFM 2.5 zero-shot | 78.84 | 93.50 | 18.39 | 0.9899* |
 
-**Before → after (same holdout, Retail II)**
+\*v1 README ranked TimesFM best on MASE using the v1 MASE scale settings; both v1 models are kept for audit. Point forecast then ≈ **346** units/week vs actual mean **403**.
 
-| Metric | Old ARIMA m=4 | **Production HW mul m=13** | Improvement |
-|--------|--------------:|---------------------------:|------------:|
-| MAE | 69,829 | **22,453** | **−68%** |
-| MAPE | 38.52% | **11.91%** | **−69%** |
-| MASE | 1.825 | **0.561** | **−69%** |
+#### v2 production bake-off results (new)
 
-**Rolling-origin mean MASE:** TimesFM averages **~0.50** across origins (strong robustness); holdout champion remains HW mul m=13. Production systems should report **both** holdout champion and rolling mean ranking.
+Production champion: **`holt_winters_mul_m52`**  
+(`statsmodels` ExponentialSmoothing, trend=add, seasonal=mul, period=**52**).  
+Ljung-Box on residuals p≈**0.22**. Full table: `data/results/superstore_production_metrics.csv`.
 
-**Inventory read (champion):** point ≈ **155,849** units/week; PI ≈ **107k–204k**; actual mean **174,261**. Bias negative (under-forecast on peak weeks)—use upper PI for service-level planning.
+| Model (v2 holdout) | MAE | RMSE | MAPE (%) | sMAPE (%) | MASE | bias | PI cover |
+|--------------------|-----:|-----:|---------:|----------:|-----:|-----:|---------:|
+| **holt_winters_mul_m52 (champion)** | **48.12** | **61.40** | **11.44** | **11.52** | **0.803** | −13.8 | 0.625 |
+| holt_winters_mul_m26 | 54.25 | 72.06 | 13.07 | 13.52 | 0.906 | −27.3 | 0.750 |
+| holt_winters_add_m52 | 57.57 | 78.78 | 12.98 | 13.85 | 0.961 | −40.7 | 0.500 |
+| TimesFM 2.5 zero-shot | 78.84 | 93.50 | 18.39 | 19.79 | 1.316 | −57.2 | **0.875** |
+| seasonal_naive_m52 | 80.00 | 119.29 | 17.16 | 20.72 | 1.336 | −78.8 | 0.625 |
+| ensemble_inv_val_mae | 83.23 | 95.77 | 20.45 | 21.43 | 1.390 | −49.7 | 0.625 |
+| holt_winters_add_m4 (≈ v1 classical) | 104.84 | 119.45 | 26.61 | 27.49 | 1.751 | −55.2 | 0.500 |
+| auto_arima_m4 | 123.97 | 149.61 | 27.18 | 33.07 | 2.070 | −118.8 | 0.375 |
 
-### Cross-notebook interpretation (honest)
+**Rolling-origin mean MASE (3 origins, v2):** `holt_winters_mul_m52` **0.764** (best family); TimesFM mean MASE ≈ **1.11**.
+
+**Inventory (v2 champion):** point ≈ **389.6** units/week; PI ≈ **337.9–441.2**; actual mean **403.4**. Bias **−13.8** (mild under-forecast). Service-minded cover toward ~**441**.
+
+#### Superstore head-to-head (same holdout)
+
+| Metric | v1 native ETS | v1 TimesFM | **v2 champion HW mul m=52** | v2 vs v1 ETS | v2 vs v1 TimesFM |
+|--------|--------------:|-----------:|----------------------------:|-------------:|-----------------:|
+| MAE | 104.84 | 78.84 | **48.12** | **−54.1%** | **−39.0%** |
+| RMSE | 119.45 | 93.50 | **61.40** | **−48.6%** | **−34.3%** |
+| MAPE (%) | 26.61 | 18.39 | **11.44** | **−57.0%** | **−37.8%** |
+| MASE | 1.316 | 0.990* | **0.803** | **−39.0%** | better on v2 scale / bake-off |
+| Point forecast (mean) | ~346 | ~346 | **~390** | closer to actual 403 | closer to actual 403 |
+
+---
+
+### Notebook 2 — Online Retail II: old vs new
+
+#### v1 baseline results (preserved)
+
+PyCaret survey winner: **`arima`** (CV MASE 1.4841).  
+Native re-fit: `pmdarima auto_arima (1,0,0)` seasonal `(0,0,0,4)`. TimesFM zero-shot on the same holdout.
+
+| Model (v1) | MAE | RMSE | MAPE (%) | MASE |
+|------------|-----:|-----:|---------:|-----:|
+| Native auto_arima m=4 | 69,829 | 76,436 | 38.52 | 1.8253 |
+| TimesFM 2.5 zero-shot | 31,732 | 40,347 | 16.88 | 0.8295 |
+
+v1 held TimesFM as holdout winner. Point ≈ **146,495** units/week vs actual mean **174,261**.
+
+#### v2 production bake-off results (new)
+
+Production champion (holdout): **`holt_winters_mul_m13`**.  
+Full table: `data/results/online_retail_ii_production_metrics.csv`.
+
+| Model (v2 holdout) | MAE | RMSE | MAPE (%) | sMAPE (%) | MASE | bias | PI cover |
+|--------------------|-----:|-----:|---------:|----------:|-----:|-----:|---------:|
+| **holt_winters_mul_m13 (champion)** | **22,453** | **29,926** | **11.91** | **12.92** | **0.561** | −18,411 | **0.875** |
+| holt_winters_mul_m8 | 27,624 | 41,807 | 13.88 | 15.93 | 0.691 | −23,467 | 0.750 |
+| seasonal_naive_m52 | 27,724 | 38,596 | 16.59 | 15.77 | 0.693 | −3,838 | 0.875 |
+| holt_winters_mul_m26 | 30,227 | 34,464 | 16.83 | 18.46 | 0.756 | −25,044 | 0.875 |
+| TimesFM 2.5 zero-shot | 31,732 | 40,347 | 16.88 | 18.99 | 0.793 | −27,766 | 0.875 |
+| ensemble_inv_val_mae | 32,029 | 40,863 | 16.89 | 19.07 | 0.801 | −30,825 | 0.875 |
+| auto_arima_m4 (≈ v1 classical) | 69,829 | 76,436 | 38.52 | 48.58 | 1.745 | −69,829 | 0.500 |
+
+**Rolling-origin mean MASE (v2):** TimesFM ≈ **0.50** (strong across cuts); HW mul m=13 ≈ **0.54**.  
+→ **Holdout champion ≠ always rolling champion** — production reports both.
+
+**Inventory (v2 champion):** point ≈ **155,849** units/week; PI ≈ **107,248–204,451**; actual mean **174,261**. Bias **−18,411** — use upper band for service-level planning on peak weeks.
+
+#### Retail II head-to-head (same holdout)
+
+| Metric | v1 auto_arima m=4 | v1 TimesFM | **v2 champion HW mul m=13** | v2 vs v1 ARIMA | v2 vs v1 TimesFM |
+|--------|------------------:|-----------:|----------------------------:|---------------:|-----------------:|
+| MAE | 69,829 | 31,732 | **22,453** | **−67.8%** | **−29.2%** |
+| RMSE | 76,436 | 40,347 | **29,926** | **−60.8%** | **−25.8%** |
+| MAPE (%) | 38.52 | 16.88 | **11.91** | **−69.1%** | **−29.4%** |
+| MASE | 1.825 | 0.830 | **0.561** | **−69.3%** | **−32.4%** |
+
+---
+
+### How we got better results (summary)
+
+```text
+v1:  PyCaret(m=4) → single native re-fit → TimesFM zero-shot → pick lower MASE
+                    ✗ often wrong seasonal period
+                    ✗ additive/short-cycle under peak demand
+
+v2:  EDA grain (weekly)
+  → bake-off: snaive + HW add/mul × {4,8,13,26,52} + auto_arima + TimesFM
+  → nested val weights + ensemble
+  → holdout leaderboard + rolling-origin means
+  → ship champion + uncertainty band
+                    ✓ period fits history length
+                    ✓ multiplicative peaks
+                    ✓ robust gate, not one cut
+```
+
+| Technique | Superstore impact | Retail II impact |
+|-----------|-------------------|------------------|
+| Multiplicative HW | m=52 champion | m=13 champion |
+| Period search | m=52 ≫ m=4 | m=13 ≫ m=4 ARIMA |
+| TimesFM production config | Best PI coverage (0.875) | Competitive; best rolling mean |
+| Rolling-origin | Confirms mul_m52 family | TimesFM wins mean MASE |
+| Keep v1 metrics | Audit trail / regression check | Same |
+
+Artifacts:  
+- `data/results/superstore_production_metrics.csv`  
+- `data/results/online_retail_ii_production_metrics.csv`  
+- Executed notebooks under `notebooks/*.ipynb`
+
+---
+
+### Cross-notebook lessons
 
 | Lesson | Evidence |
 |--------|----------|
-| Seasonality period is a first-class hyperparameter | m=4 lost to m=52 / m=13 by large margins |
-| Multiplicative HW fits retail peak amplitude | Superstore year-end; Retail holiday ramp |
-| TSFMs are competitive, not automatic winners on one series | TimesFM best on some rolling origins (Retail), not holdout Superstore |
-| PyCaret survey ≠ production champion | Short-cycle turbo survey is for education/speed |
-| Always keep seasonal naive | Often within striking distance of fancy models |
+| Seasonality period is a first-class hyperparameter | m=4 lost to m=52 / m=13 by large margins on both datasets |
+| Multiplicative HW fits retail peak amplitude | Year-end Superstore; holiday ramp Retail II |
+| TSFMs are peers, not automatic winners on one aggregate series | TimesFM best PI / rolling on Retail; HW wins Superstore holdout |
+| PyCaret survey ≠ production champion | v1 survey winners were ETS/ARIMA short-cycle |
+| Always keep seasonal naive | Often close to mid-tier models |
+| Report holdout **and** rolling ranks | Retail: HW wins holdout, TimesFM wins rolling mean |
 
 ---
 
 ## Honest limitations
 
 1. **PyCaret 4.0.0a8 is alpha** — API and model registry may change; pin the version.  
-2. **Survey ≠ exhaustive AutoML** — classical shortlist only; several candidates can fail silently (`errors="ignore"`) and leave a thinner leaderboard.  
-3. **Seasonal period in survey is shortened** (`m=4` weekly) for runtime; true annual weekly seasonality (`m=52`) was too expensive for auto_arima/ETS in practice.  
-4. **H = 8 weeks** — short test window; different cut dates can reorder models.  
-5. **Aggregate total units only** — no SKU hierarchy, no store panel, no price/promo covariates (TimesFM XReg exists but is unused).  
-6. **Single train/test cut** — no rolling-origin full report in the notebook (PyCaret uses expanding CV internally for survey only).  
-7. **Inventory close is qualitative** — not (Q,R) policy, not fill-rate optimization.  
+2. **Survey ≠ exhaustive AutoML** — classical shortlist only; some candidates can fail silently (`errors="ignore"`).  
+3. **PyCaret survey still uses short `m=4` for speed** — production bake-off is the shipping path; do not confuse the two.  
+4. **H = 8 weeks** — short test window; different cut dates can reorder models (mitigated by rolling-origin, not eliminated).  
+5. **Aggregate total units only** — no SKU hierarchy, store panel, or price/promo covariates (TimesFM XReg unused).  
+6. **Rolling-origin is limited (3 origins)** — not a full multi-year backtest platform.  
+7. **Inventory close is qualitative** — not a full (Q,R) / fill-rate optimizer.  
 8. **Data rights** — MIT covers **code**; Superstore sample, UCI CC BY 4.0, and TimesFM weights have separate terms.  
-9. **No unsloth / no chat LLM** — TimesFM fine-tuning, if ever added, should follow Google’s PEFT/LoRA examples, not unsloth.  
-10. **MAPE** uses an epsilon floor on near-zero actuals; still fragile if zeros appear in the holdout.
+9. **No unsloth / no chat LLM** — TimesFM fine-tuning, if ever added, should follow Google’s PEFT/LoRA path.  
+10. **MAPE** uses an epsilon floor on near-zero actuals; still fragile if zeros dominate the holdout.  
+11. **Champion bias is still negative** on both peak holdouts — service levels should lean on upper PI, not point alone.
 
 ---
 
@@ -614,7 +681,8 @@ Notebooks print actual mean demand, preferred model’s mean point, and mean ban
 | TimesFM system check | READY (GPU) |
 | NB01 executed, 9 figures, 0 errors | OK |
 | NB02 executed, 9 figures, 0 errors | OK |
-| README metrics match notebook streams | OK (tables above) |
+| README metrics match notebook streams | OK (v1 + v2 tables above) |
 | MIT `LICENSE` present | OK |
+| Production CSVs under `data/results/` | OK |
 
-For a clean re-verification after changes: re-run both `nbconvert --execute` commands and diff the holdout metric dicts against the tables in [Real results](#real-results-this-run).
+For a clean re-verification after changes: re-run both `nbconvert --execute` commands and diff the holdout metric dicts against [v1 vs v2 real results](#real-results--v1-baseline-vs-v2-production-bake-off).
