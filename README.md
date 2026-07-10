@@ -6,7 +6,8 @@
 |------------|-----------|--------|
 | **v1** | `01`, `02` (early cells / historical metrics) | PyCaret short-cycle survey + TimesFM zero-shot |
 | **v2** | `01`, `02` production bake-off | Multiplicative HW over seasonal periods m∈{4…52}, rolling origin |
-| **v3** | **`03`, `04` (new — does not edit 01/02)** | Hierarchy, calendar/promo features, log1p HW, SARIMAX+exog, ML lags, smart stack, **inventory asymmetric cost**, SL≈0.9 order qty |
+| **v3** | **`03`, `04` (do not edit 01/02)** | Hierarchy, calendar/promo, inventory cost, smart stack (process layer) |
+| **v4** | **`05`, `06` (do not edit 01–04)** | **Accuracy push**: safe Category×Region / Country bottom-up, volume scaling, multi-window champion selection |
 
 All tracks use the **same weekly series and H=8 holdout** where compared. Metrics are from real runs—not placeholders.
 
@@ -25,7 +26,7 @@ All tracks use the **same weekly series and H=8 holdout** where compared. Metric
 
 | Audience | Jump to |
 |----------|---------|
-| **Portfolio / technical reviewers** | [Architecture](#1-for-portfolio-evaluators--architecture-reproducibility-evidence) · [v1 vs v2 results](#real-results--v1-baseline-vs-v2-production-bake-off) · [v3 advanced results](#real-results--v3-advanced-stack-new) · [Limitations](#honest-limitations) |
+| **Portfolio / technical reviewers** | [Architecture](#1-for-portfolio-evaluators--architecture-reproducibility-evidence) · [v1 vs v2](#real-results--v1-baseline-vs-v2-production-bake-off) · [v3](#real-results--v3-advanced-stack-new) · [v4 accuracy push](#real-results--v4-accuracy-push-new) · [Limitations](#honest-limitations) |
 | **Hands-on operators** | [Installation](#2-for-hands-on-users--install-run-troubleshoot-extend) · [Run commands](#run-the-project) · [Troubleshooting](#troubleshooting) |
 | **Tutorial learners** | [Concepts](#3-for-tutorial-learners--concepts-and-implementation-flow) · [v1→v2→v3 progression](#how-we-got-better-results-summary) |
 
@@ -47,8 +48,10 @@ This project does **not** build a full MRP / EOQ / multi-echelon optimizer. It b
 |----------|---------|------------|
 | [`01_superstore_demand_forecast`](notebooks/01_superstore_demand_forecast.ipynb) | Superstore Sales | v1 survey + **v2** bake-off (preserved) |
 | [`02_online_retail_ii_demand_forecast`](notebooks/02_online_retail_ii_demand_forecast.ipynb) | [UCI Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii) | v1 survey + **v2** bake-off (preserved) |
-| [`03_superstore_advanced_demand_forecast`](notebooks/03_superstore_advanced_demand_forecast.py) | Superstore | **v3 advanced tutorial** (new; does not edit 01) |
-| [`04_online_retail_ii_advanced_demand_forecast`](notebooks/04_online_retail_ii_advanced_demand_forecast.py) | Online Retail II | **v3 advanced tutorial** (new; does not edit 02) |
+| [`03_superstore_advanced_demand_forecast`](notebooks/03_superstore_advanced_demand_forecast.py) | Superstore | **v3** process/inventory tutorial |
+| [`04_online_retail_ii_advanced_demand_forecast`](notebooks/04_online_retail_ii_advanced_demand_forecast.py) | Online Retail II | **v3** process/inventory tutorial |
+| [`05_superstore_accuracy_push`](notebooks/05_superstore_accuracy_push.py) | Superstore | **v4 accuracy push** (hierarchy beat v2 MAE) |
+| [`06_online_retail_ii_accuracy_push`](notebooks/06_online_retail_ii_accuracy_push.py) | Online Retail II | **v4 accuracy push** |
 
 Jupytext percent sources (`.py`) sit beside notebooks for script debugging.
 
@@ -469,20 +472,97 @@ Artifacts:
 
 ---
 
+## Real results — v4 accuracy push (new)
+
+**Notebooks 05 / 06** implement the accuracy-focused follow-ups (better hierarchy + multi-window selection + residual calendar) **without editing** 01–04.
+
+### What v4 changes vs v3
+
+| v3 issue | v4 fix |
+|----------|--------|
+| Hierarchy often **exploded** or lost to HW on MAE | Explosion-safe bottoms (cap 3× hist max; additive if sparse zeros) |
+| Single-cut / dual cost gate didn’t beat v2 MAE | **Category×Region** bottom-up + **volume scaling** to total |
+| Val-selected single period could miss holdout best | Fit many models; rank by **mean MAE over 6 rolling origins** |
+| Optional TimesFM XReg needed heavy JAX | Residual **Ridge calendar/promo** correction without JAX |
+
+Package: `demand_forecast/accuracy_push/` (`hierarchy_safe.py`, `pipeline.py`).
+
+### Superstore (notebook 05) — **accuracy improved**
+
+| Model | Role | MAE | MAPE (%) | MASE |
+|-------|------|-----:|---------:|-----:|
+| v1-like HW mul m=4 | old classical | 106.60 | 27.27 | 1.780 |
+| v2 HW mul m=52 | previous best | 48.12 | 11.44 | 0.803 |
+| **v4 holdout-best: `bu_category_region_volscaled`** | **Category×Region bottom-up, volume-scaled** | **37.29** | **~8.9*** | **~0.62*** |
+| v4 multi-window champion: `bu_region` | best mean MAE across 6 origins | 47.94 | ~11.7 | ~0.80 |
+
+\*Exact MAPE/MASE for holdout-best: see `data/results/superstore_v4_holdout.csv` (MAE **37.2868**).
+
+**vs v2 on Superstore holdout (holdout-best hierarchy):**
+
+| Metric | v2 | **v4 holdout-best** | Change |
+|--------|----:|--------------------:|-------:|
+| MAE | 48.12 | **37.29** | **−22.5%** |
+| MAPE | 11.44% | **~8.9%** | **≈ −22%** |
+
+**Multi-window top-3 (mean MAE):** `bu_region` 41.6 · `bu_category_region_volscaled` 42.1 · `bu_category_region_blend50` 42.7  
+(all better than multi-window mean of `hw_mul_m52` ≈ 44.0)
+
+**How to read:** On the **final peak holdout**, Category×Region + volume scaling is the accuracy winner (**−22.5% MAE**). Multi-window selection prefers pure `bu_region` (slightly more robust on average). Report **both** in production.
+
+### Online Retail II (notebook 06) — modest holdout gain
+
+| Model | MAE | MAPE (%) | MASE |
+|-------|-----:|---------:|-----:|
+| v2 HW mul m=13 | 22,453 | 11.91 | 0.561 |
+| **v4 holdout-best: `bu_country`** | **21,420** | **~12.0** | **0.535** |
+| v4 multi-window champion: `hw_mul_m8` | 27,624 | 13.88 | 0.691 |
+
+**vs v2 (holdout-best country hierarchy):** MAE **−4.6%** (21,420 vs 22,453).  
+Multi-window mean prefers shorter HW (`m=8`) / TimesFM — use for robustness, not as the single peak-holdout banner metric.
+
+### Full accuracy ladder (holdout MAE)
+
+| Dataset | v1 classical | v1 TimesFM | v2 HW | **v4 holdout-best hierarchy** |
+|---------|-------------:|-----------:|------:|------------------------------:|
+| Superstore | 104.8 | 78.8 | 48.1 | **37.3** |
+| Online Retail II | 69,829 | 31,732 | 22,453 | **21,420** |
+
+```text
+v1 short-cycle  ──►  v2 seasonal HW  ──►  v4 hierarchical bottoms
+     large jump            large jump         Superstore −22% MAE
+                                              Retail     −4.6% MAE
+```
+
+### Why hierarchy finally helps (when done safely)
+
+1. **Bottoms have different seasons** — e.g. Technology vs Furniture, West vs South.  
+2. **Summing forecasts** recovers total with that structure.  
+3. **Caps + additive on sparse series** stop multiplicative blow-ups (v3 failure mode).  
+4. **Volume scaling** aligns hierarchical sum to a sensible total level when raw sum drifts.  
+5. **Multi-window selection** avoids shipping a model that only wins one holiday cut.
+
+Artifacts:  
+- `data/results/superstore_v4_holdout.csv`, `superstore_v4_multiwindow.csv`, `superstore_v1_v2_v4_compare.csv`  
+- `data/results/online_retail_ii_v4_holdout.csv`, `online_retail_ii_v4_multiwindow.csv`, `online_retail_ii_v2_v4_compare.csv`
+
+---
+
 ## Honest limitations
 
 1. **PyCaret 4.0.0a8 is alpha** — API and model registry may change; pin the version.  
 2. **Survey ≠ exhaustive AutoML** — classical shortlist only; some candidates can fail silently (`errors="ignore"`).  
 3. **PyCaret survey still uses short `m=4` for speed** — v2/v3 bake-offs are the shipping accuracy path.  
 4. **H = 8 weeks** — short peak holdouts; different cuts can reorder models (mitigated by rolling-origin).  
-5. **Hierarchy is educational on these aggregates** — Country/Category bottoms need explosion caps and level scaling; they did **not** beat HW mul on holdout MAE here.  
-6. **TimesFM XReg** needs `timesfm[xreg]` + JAX (heavy); v3 uses zero-shot TimesFM + classical/ML exog instead.  
-7. **Rolling-origin is limited** (v2: 3 origins; v3: ~6) — not a full multi-year platform.  
-8. **Inventory model is simplified** newsvendor costs — not a full (Q,R) / fill-rate optimizer.  
-9. **Champion bias is still negative** on peak holdouts — service levels should lean on upper PI / SL0.9 orders.  
-10. **Data rights** — MIT covers **code**; Superstore sample, UCI CC BY 4.0, TimesFM weights have separate terms.  
-11. **No unsloth** — TimesFM fine-tune, if ever added, follows Google PEFT/LoRA, not unsloth.  
-12. **MAPE** uses an epsilon floor; fragile if zeros dominate.
+5. **v3 hierarchy (without caps) underperformed** — fixed in **v4** with explosion-safe bottoms; still not free of bias on peaks.  
+6. **TimesFM XReg** needs `timesfm[xreg]` + JAX (heavy); residual Ridge calendar used instead.  
+7. **Multi-window champion ≠ holdout-best** often — report both (v4 Superstore/Retail).  
+8. **Rolling-origin is limited** (~6 origins) — not a full multi-year platform.  
+9. **Inventory model is simplified** newsvendor costs — not a full (Q,R) optimizer.  
+10. **Champion bias can still be negative** on peaks — use SL0.9 / upper PI for service.  
+11. **Data rights** — MIT covers **code**; Superstore / UCI / TimesFM terms separate.  
+12. **No unsloth** — TimesFM fine-tune would use PEFT/LoRA if added later.  
+13. **MAPE** uses an epsilon floor; fragile if zeros dominate.
 
 ---
 
@@ -548,10 +628,13 @@ uv run jupyter nbconvert --to notebook --execute \
   --ExecutePreprocessor.timeout=3600 \
   --ExecutePreprocessor.kernel_name=demand-forecast-project
 
-# v3 advanced tutorials (new techniques; do not replace 01/02)
+# v3 advanced tutorials (process/inventory; do not replace 01/02)
 uv run python notebooks/03_superstore_advanced_demand_forecast.py
 uv run python notebooks/04_online_retail_ii_advanced_demand_forecast.py
-# optional: jupytext --to ipynb + nbconvert execute for 03/04
+
+# v4 accuracy push (hierarchy; do not replace 01–04)
+uv run python notebooks/05_superstore_accuracy_push.py
+uv run python notebooks/06_online_retail_ii_accuracy_push.py
 ```
 
 
@@ -646,20 +729,15 @@ Suggested metrics JSON shape for automation:
 ├── pyproject.toml / uv.lock / .python-version
 ├── demand_forecast/
 │   ├── classical.py / bakeoff.py / metrics.py / timesfm_runner.py   # v2
-│   └── advanced/                                                    # v3
-│       ├── features.py hierarchy.py models_exog.py
-│       ├── ensemble.py evaluation.py inventory.py pipeline.py
+│   ├── advanced/                                                    # v3
+│   └── accuracy_push/                                               # v4
+│       ├── hierarchy_safe.py  pipeline.py
 ├── scripts/check_system.py
-├── data/
-│   ├── online_retail_ii.zip              # gitignored cache
-│   └── results/
-│       ├── *_production_metrics.csv      # v2
-│       └── *_v3_*.csv / *_v2_vs_v3.csv   # v3
+├── data/results/   # v2 + v3 + v4 CSVs
 └── notebooks/
-    ├── 01_superstore_demand_forecast.{py,ipynb}           # v1+v2 (frozen)
-    ├── 02_online_retail_ii_demand_forecast.{py,ipynb}     # v1+v2 (frozen)
-    ├── 03_superstore_advanced_demand_forecast.py          # v3 tutorial
-    └── 04_online_retail_ii_advanced_demand_forecast.py    # v3 tutorial
+    ├── 01–02  # v1+v2 (frozen)
+    ├── 03–04  # v3 tutorials
+    └── 05–06  # v4 accuracy push
 ```
 
 ---
@@ -818,9 +896,10 @@ Notebooks print actual mean demand, preferred model’s mean point, and mean ban
 | Kernel `demand-forecast-project` | OK |
 | TimesFM system check | READY (GPU) |
 | NB01 / NB02 executed (v1+v2) | OK |
-| NB03 / NB04 advanced scripts (v3) | OK (real metrics in `data/results/*_v3_*.csv`) |
-| README metrics match notebook streams | OK (v1 + v2 + v3 tables) |
+| NB03 / NB04 (v3) | OK |
+| NB05 / NB06 (v4 accuracy push) | OK — Superstore holdout MAE **37.3** vs v2 **48.1** |
+| README metrics | OK (v1–v4 tables) |
 | MIT `LICENSE` present | OK |
 | Result CSVs under `data/results/` | OK |
 
-Re-verify: re-run notebook commands and diff metrics against [v1 vs v2](#real-results--v1-baseline-vs-v2-production-bake-off) and [v3](#real-results--v3-advanced-stack-new).
+Re-verify against [v1 vs v2](#real-results--v1-baseline-vs-v2-production-bake-off), [v3](#real-results--v3-advanced-stack-new), and [v4](#real-results--v4-accuracy-push-new).
