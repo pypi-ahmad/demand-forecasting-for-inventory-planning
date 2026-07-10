@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+data/*.zip
+data/*.xlsx
+data/*.xls
+logs.log
+**/logs.log
+.DS_Store
