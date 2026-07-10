@@ -1,11 +1,14 @@
 # Demand Forecasting for Inventory Planning
 
-**Tutorial + portfolio project:** forecast **aggregate unit demand** (not revenue) for inventory decisions, then compare two production-relevant approaches on the **same time-ordered holdout**:
+**Tutorial + portfolio project:** forecast **aggregate unit demand** (not revenue) for inventory decisions. The repo is layered so **older notebooks stay intact for learning**, while newer notebooks add stronger techniques:
 
-1. **Classical / statistical path** — PyCaret 4.x time-series model survey (ranked by **MASE**) → **native reimplementation** of the winner (`statsmodels` / `pmdarima`) with residual diagnostics and prediction intervals  
-2. **Foundation-model path** — Google **TimesFM 2.5** (200M params) **zero-shot** forecast: full history as inference context, **no gradient updates** on the local series  
+| Generation | Notebooks | Focus |
+|------------|-----------|--------|
+| **v1** | `01`, `02` (early cells / historical metrics) | PyCaret short-cycle survey + TimesFM zero-shot |
+| **v2** | `01`, `02` production bake-off | Multiplicative HW over seasonal periods m∈{4…52}, rolling origin |
+| **v3** | **`03`, `04` (new — does not edit 01/02)** | Hierarchy, calendar/promo features, log1p HW, SARIMAX+exog, ML lags, smart stack, **inventory asymmetric cost**, SL≈0.9 order qty |
 
-Both tracks are fully implemented, executed, and scored with identical metrics (MAE, RMSE, MAPE, MASE). Notebooks ship with **real embedded plots and printed numbers** from a verified run on this machine—not placeholders.
+All tracks use the **same weekly series and H=8 holdout** where compared. Metrics are from real runs—not placeholders.
 
 | | |
 |---|---|
@@ -22,9 +25,9 @@ Both tracks are fully implemented, executed, and scored with identical metrics (
 
 | Audience | Jump to |
 |----------|---------|
-| **Portfolio / technical reviewers** | [Architecture & design decisions](#1-for-portfolio-evaluators--architecture-reproducibility-evidence) · [Real evidence](#real-results-this-run) · [Limitations](#honest-limitations) |
-| **Hands-on operators** | [Installation](#2-for-hands-on-users--install-run-troubleshoot-extend) · [Run commands](#run-the-project) · [Troubleshooting](#troubleshooting) · [Extension points](#extending-the-local-workflow) |
-| **Tutorial learners** | [Concepts](#3-for-tutorial-learners--concepts-and-implementation-flow) · [End-to-end flow](#implementation-flow-newbie--pro) · [Metrics glossary](#metrics-what-they-mean) |
+| **Portfolio / technical reviewers** | [Architecture](#1-for-portfolio-evaluators--architecture-reproducibility-evidence) · [v1 vs v2 results](#real-results--v1-baseline-vs-v2-production-bake-off) · [v3 advanced results](#real-results--v3-advanced-stack-new) · [Limitations](#honest-limitations) |
+| **Hands-on operators** | [Installation](#2-for-hands-on-users--install-run-troubleshoot-extend) · [Run commands](#run-the-project) · [Troubleshooting](#troubleshooting) |
+| **Tutorial learners** | [Concepts](#3-for-tutorial-learners--concepts-and-implementation-flow) · [v1→v2→v3 progression](#how-we-got-better-results-summary) |
 
 ---
 
@@ -38,14 +41,16 @@ Inventory planning lives on **units over time**. A warehouse, DC, or retail plan
 
 This project does **not** build a full MRP / EOQ / multi-echelon optimizer. It builds the forecasting core those systems depend on, and ends each notebook with a **directional** inventory takeaway (point + band), not a formal safety-stock formula.
 
-**Two datasets, same protocol:**
+**Notebooks (all kept):**
 
-| Notebook | Dataset | Target |
-|----------|---------|--------|
-| [`notebooks/01_superstore_demand_forecast.ipynb`](notebooks/01_superstore_demand_forecast.ipynb) | Sample Superstore sales (line-level orders) | Σ `Quantity` per period |
-| [`notebooks/02_online_retail_ii_demand_forecast.ipynb`](notebooks/02_online_retail_ii_demand_forecast.ipynb) | [UCI Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii) (id 502) | Σ `Quantity` per period |
+| Notebook | Dataset | Generation |
+|----------|---------|------------|
+| [`01_superstore_demand_forecast`](notebooks/01_superstore_demand_forecast.ipynb) | Superstore Sales | v1 survey + **v2** bake-off (preserved) |
+| [`02_online_retail_ii_demand_forecast`](notebooks/02_online_retail_ii_demand_forecast.ipynb) | [UCI Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii) | v1 survey + **v2** bake-off (preserved) |
+| [`03_superstore_advanced_demand_forecast`](notebooks/03_superstore_advanced_demand_forecast.py) | Superstore | **v3 advanced tutorial** (new; does not edit 01) |
+| [`04_online_retail_ii_advanced_demand_forecast`](notebooks/04_online_retail_ii_advanced_demand_forecast.py) | Online Retail II | **v3 advanced tutorial** (new; does not edit 02) |
 
-Jupytext percent sources (`.py`) sit beside each notebook for script debugging.
+Jupytext percent sources (`.py`) sit beside notebooks for script debugging.
 
 ---
 
@@ -343,19 +348,141 @@ Artifacts:
 
 ---
 
+## Real results — v3 advanced stack (new)
+
+**Notebooks 03 / 04** add production-style techniques **without changing** notebooks 01/02 or their v1/v2 metrics. Same weekly totals and **H=8** holdout for comparison.
+
+### What v3 adds (and why)
+
+| Technique | Module | Why we do it |
+|-----------|--------|----------------|
+| **Hierarchical bottom-up** (Category×Region or Country → sum) | `advanced/hierarchy.py` | Total demand mixes different seasons; bottoms can carry structure the aggregate hides |
+| **Calendar + holiday + promo features** | `advanced/features.py` | Year-end peaks are partly *driven* by calendar/discount, not pure noise |
+| **log1p + HW** | `advanced/models_exog.py` | Variance often grows with level; stabilize then back-transform |
+| **SARIMAX + exogenous regressors** | `advanced/models_exog.py` | Classical linear dynamics + measurable drivers |
+| **HistGradientBoosting lags + exog** | `advanced/models_exog.py` | Nonlinear lag/promo interactions |
+| **TimesFM zero-shot (peer)** | `timesfm_runner.py` | Foundation prior; XReg optional (needs `timesfm[xreg]`+JAX — documented, not required) |
+| **Smart 2–3 model stack** | `advanced/ensemble.py` | Inverse-**validation** MAE weights on diverse strong models only (not 12-model soup) |
+| **Asymmetric inventory cost** (underage=4, overage=1) | `advanced/inventory.py` | Stockouts cost more than overstock — MAE alone is not ops |
+| **SL≈0.9 order quantity** from PI band | `advanced/inventory.py` | Reorder from predictive upper band, not only the median |
+| **Longer rolling-origin (6 cuts)** | `advanced/evaluation.py` | Gate models across many windows |
+| **Champion gate** | `advanced/pipeline.py` | Among models within **15% of best MASE**, pick **lowest asymmetric cost** (stops pure over-forecast “winners”) |
+
+Package entrypoint: `demand_forecast.advanced.run_advanced_pipeline`.
+
+```text
+v1 → teach survey vs TimesFM
+v2 → fix seasonality (HW mul + period search)  ← large accuracy jump
+v3 → hierarchy, drivers, inventory loss, smart stack, longer rolling
+     ← accuracy champion often still v2 HW; *decision quality* metrics expand
+```
+
+### Superstore — v3 results (notebook 03)
+
+**Accuracy leaderboard (selected; full CSV: `data/results/superstore_v3_accuracy.csv`)**
+
+| Model | MAE | RMSE | MAPE (%) | MASE | bias |
+|-------|-----:|-----:|---------:|-----:|-----:|
+| **hw_mul_m52 (v3 champion)** | **48.12** | **61.40** | **11.44** | **0.803** | −13.8 |
+| hw_mul_m26 | 54.25 | 72.06 | 13.07 | 0.906 | −27.3 |
+| smart_stack (HW26+log1p+HW52) | 54.99 | 73.64 | 12.85 | 0.918 | −29.4 |
+| hw_log1p | 73.20 | 93.34 | 16.71 | 1.222 | −47.4 |
+| timesfm_zeroshot | 78.84 | 93.50 | 18.39 | 1.316 | −57.2 |
+| hierarchy_bottom_up (Category×Region) | 90.49 | 109.26 | 20.59 | 1.511 | −89.4 |
+| sarimax_exog | 90.80 | 106.16 | 22.45 | 1.516 | −45.9 |
+| hgb_lags_exog | 119.40 | 136.03 | 27.63 | 1.993 | −94.8 |
+| seasonal_naive | 202.00 | 229.40 | 45.66 | 3.373 | −202.0 |
+
+**Inventory table (underage cost 4× overage; lower cost better)** — `data/results/superstore_v3_inventory.csv`
+
+| Model | under_units | over_units | asymmetric_cost | SL0.9 order cost |
+|-------|------------:|-----------:|----------------:|-----------------:|
+| **hw_mul_m52** | 247.7 | 137.2 | **1128.2** | **772.2** |
+| hw_mul_m26 | 326.3 | 107.7 | 1413.0 | 861.1 |
+| smart_stack | 337.6 | 102.3 | 1452.7 | 896.3 |
+| timesfm_zeroshot | 544.3 | 86.4 | 2263.7 | 834.1 |
+| hierarchy_bottom_up | 719.4 | 4.4 | 2882.2 | 1578.6 |
+
+Note: hierarchy has very low overstock but **high understock** on this peak holdout → loses the dual gate (MASE + cost).
+
+**v1 → v2 → v3 accuracy (Superstore, same holdout)**
+
+| Metric | v1 ETS (m≈4) | v1 TimesFM | **v2 / v3 HW mul m=52** |
+|--------|-------------:|-----------:|------------------------:|
+| MAE | 104.84 | 78.84 | **48.12** |
+| MAPE (%) | 26.61 | 18.39 | **11.44** |
+| MASE | 1.316 | ~0.99 | **0.803** |
+
+**What v3 changed vs v2 on Superstore:** holdout **accuracy champion is the same** as v2 (`hw_mul_m52`). v3’s value is **not a new MAE winner** on this cut, but:
+
+1. **Confirms** m=52 still wins when hierarchy, SARIMAX, ML, and stacks compete.  
+2. Adds **inventory KPIs** — SL0.9 order **cuts asymmetric cost** 1128 → **772** for the same champion.  
+3. Documents **smart_stack** and hierarchy as learning baselines (stack MAE 55.0, hierarchy 90.5).  
+4. Extends **rolling-origin** evaluation for ops gating.
+
+---
+
+### Online Retail II — v3 results (notebook 04)
+
+**Accuracy leaderboard (selected; `data/results/online_retail_ii_v3_accuracy.csv`)**
+
+| Model | MAE | RMSE | MAPE (%) | MASE | bias |
+|-------|-----:|-----:|---------:|-----:|-----:|
+| **hw_mul_m13 (v3 champion)** | **22,453** | **29,926** | **11.91** | **0.561** | −18,411 |
+| hw_mul_m8 | 27,624 | 41,807 | 13.88 | 0.691 | −23,467 |
+| hw_mul_m26 (val-selected alias) | 30,227 | 34,464 | 16.83 | 0.756 | −25,044 |
+| smart_stack | 30,937 | 37,539 | 16.82 | 0.773 | −29,773 |
+| timesfm_zeroshot | 31,732 | 40,347 | 16.88 | 0.793 | −27,766 |
+| hierarchy_bottom_up (Country) | 50,624 | 55,561 | 28.43 | 1.265 | −50,624 |
+| sarimax_exog | 68,224 | 75,392 | 41.27 | 1.705 | +58,401 |
+| seasonal_naive | 90,607 | 93,722 | 51.96 | 2.265 | −90,607 |
+
+**Inventory (selected)** — champion `hw_mul_m13`: under_units ≈ **163.5k**, over ≈ **16.2k**, asymmetric_cost ≈ **670k**; SL0.9 order **sharply reduces under_units** (≈23k) on the same holdout.
+
+**v1 → v2 → v3 accuracy (Retail II, same holdout)**
+
+| Metric | v1 ARIMA m=4 | v1 TimesFM | **v2 / v3 HW mul m=13** |
+|--------|-------------:|-----------:|------------------------:|
+| MAE | 69,829 | 31,732 | **22,453** |
+| MAPE (%) | 38.52 | 16.88 | **11.91** |
+| MASE | 1.825 | 0.830 | **0.561** |
+
+**What v3 changed vs v2 on Retail II:** again the **holdout accuracy champion matches v2** (`hw_mul_m13`). Nested val alone preferred m=26; the multi-period board still surfaces **m=13** as best — showing why we fit **all feasible periods**, not only the val-selected alias.
+
+---
+
+### How to read the three generations
+
+| Question | Answer from this repo |
+|----------|------------------------|
+| Did v2 beat v1? | **Yes, dramatically** (Superstore MAE −54%; Retail −68% vs old classical). |
+| Did v3 beat v2 on MAE? | **Not on these two peak holdouts** — best univariate seasonal model was already strong. |
+| Why keep v3? | **Inventory-aware selection**, SL0.9 reorder math, hierarchy/features as **auditable competitors**, longer rolling tests, tutorial explanations for production teams. |
+| What still wins accuracy? | **Multiplicative HW with the right m** (52 Superstore, 13 Retail). |
+| What should ops order? | Prefer **SL≈0.9 quantile order** (from PI), not raw point — see inventory tables. |
+
+Artifacts:
+
+- v2: `data/results/superstore_production_metrics.csv`, `online_retail_ii_production_metrics.csv`  
+- v3: `superstore_v3_accuracy.csv`, `superstore_v3_inventory.csv`, `superstore_v2_vs_v3.csv`  
+- v3: `online_retail_ii_v3_accuracy.csv`, `online_retail_ii_v3_inventory.csv`, `online_retail_ii_v2_vs_v3.csv`
+
+---
+
 ## Honest limitations
 
 1. **PyCaret 4.0.0a8 is alpha** — API and model registry may change; pin the version.  
 2. **Survey ≠ exhaustive AutoML** — classical shortlist only; some candidates can fail silently (`errors="ignore"`).  
-3. **PyCaret survey still uses short `m=4` for speed** — production bake-off is the shipping path; do not confuse the two.  
-4. **H = 8 weeks** — short test window; different cut dates can reorder models (mitigated by rolling-origin, not eliminated).  
-5. **Aggregate total units only** — no SKU hierarchy, store panel, or price/promo covariates (TimesFM XReg unused).  
-6. **Rolling-origin is limited (3 origins)** — not a full multi-year backtest platform.  
-7. **Inventory close is qualitative** — not a full (Q,R) / fill-rate optimizer.  
-8. **Data rights** — MIT covers **code**; Superstore sample, UCI CC BY 4.0, and TimesFM weights have separate terms.  
-9. **No unsloth / no chat LLM** — TimesFM fine-tuning, if ever added, should follow Google’s PEFT/LoRA path.  
-10. **MAPE** uses an epsilon floor on near-zero actuals; still fragile if zeros dominate the holdout.  
-11. **Champion bias is still negative** on both peak holdouts — service levels should lean on upper PI, not point alone.
+3. **PyCaret survey still uses short `m=4` for speed** — v2/v3 bake-offs are the shipping accuracy path.  
+4. **H = 8 weeks** — short peak holdouts; different cuts can reorder models (mitigated by rolling-origin).  
+5. **Hierarchy is educational on these aggregates** — Country/Category bottoms need explosion caps and level scaling; they did **not** beat HW mul on holdout MAE here.  
+6. **TimesFM XReg** needs `timesfm[xreg]` + JAX (heavy); v3 uses zero-shot TimesFM + classical/ML exog instead.  
+7. **Rolling-origin is limited** (v2: 3 origins; v3: ~6) — not a full multi-year platform.  
+8. **Inventory model is simplified** newsvendor costs — not a full (Q,R) / fill-rate optimizer.  
+9. **Champion bias is still negative** on peak holdouts — service levels should lean on upper PI / SL0.9 orders.  
+10. **Data rights** — MIT covers **code**; Superstore sample, UCI CC BY 4.0, TimesFM weights have separate terms.  
+11. **No unsloth** — TimesFM fine-tune, if ever added, follows Google PEFT/LoRA, not unsloth.  
+12. **MAPE** uses an epsilon floor; fragile if zeros dominate.
 
 ---
 
@@ -510,18 +637,22 @@ Suggested metrics JSON shape for automation:
 ├── LICENSE / CONTRIBUTING / CODE_OF_CONDUCT
 ├── README.md
 ├── pyproject.toml / uv.lock / .python-version
-├── demand_forecast/                 # production bake-off package
-│   ├── classical.py                 # HW / snaive / auto_arima
-│   ├── timesfm_runner.py            # TimesFM 2.5 zero-shot
-│   ├── bakeoff.py                   # val weights + rolling origin
-│   └── metrics.py
+├── demand_forecast/
+│   ├── classical.py / bakeoff.py / metrics.py / timesfm_runner.py   # v2
+│   └── advanced/                                                    # v3
+│       ├── features.py hierarchy.py models_exog.py
+│       ├── ensemble.py evaluation.py inventory.py pipeline.py
 ├── scripts/check_system.py
 ├── data/
-│   ├── online_retail_ii.zip         # gitignored cache
-│   └── results/*_production_metrics.csv
+│   ├── online_retail_ii.zip              # gitignored cache
+│   └── results/
+│       ├── *_production_metrics.csv      # v2
+│       └── *_v3_*.csv / *_v2_vs_v3.csv   # v3
 └── notebooks/
-    ├── 01_superstore_demand_forecast.{py,ipynb}
-    └── 02_online_retail_ii_demand_forecast.{py,ipynb}
+    ├── 01_superstore_demand_forecast.{py,ipynb}           # v1+v2 (frozen)
+    ├── 02_online_retail_ii_demand_forecast.{py,ipynb}     # v1+v2 (frozen)
+    ├── 03_superstore_advanced_demand_forecast.py          # v3 tutorial
+    └── 04_online_retail_ii_advanced_demand_forecast.py    # v3 tutorial
 ```
 
 ---
