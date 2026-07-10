@@ -1,0 +1,34 @@
+name: Question
+description: Ask about setup, results, or how the forecasting pipeline works
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: Be specific — which notebook, section, or metric?
+    validations:
+      required: true
+  - type: dropdown
+    id: context
+    attributes:
+      label: Context
+      options:
+        - Installation / environment
+        - Understanding results in README
+        - Superstore notebook
+        - Online Retail II notebook
+        - PyCaret API
+        - TimesFM zero-shot usage
+        - Inventory takeaway
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you already tried
+      description: Docs read, commands run, errors seen (if any).
+    validations:
+      required: false

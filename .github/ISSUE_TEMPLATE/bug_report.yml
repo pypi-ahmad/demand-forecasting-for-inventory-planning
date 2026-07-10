@@ -1,0 +1,86 @@
+name: Bug report
+description: Something broken in setup, notebooks, metrics, or data loading
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Fill in what you can — traceback and environment matter most.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong in one or two sentences?
+      placeholder: e.g. Notebook 02 fails when loading the UCI zip on Python 3.13.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands from a clean clone if possible.
+      placeholder: |
+        uv sync
+        uv run python notebooks/02_online_retail_ii_demand_forecast.py
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Paste the full traceback or relevant log output.
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: notebook
+    attributes:
+      label: Affected notebook / area
+      options:
+        - "01 Superstore"
+        - "02 Online Retail II"
+        - Both notebooks
+        - Environment / install only
+        - README / docs
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: e.g. Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment details
+      description: Output of version checks helps a lot.
+      placeholder: |
+        python: 3.13.13
+        pycaret: 4.0.0a8
+        timesfm: 2.0.2
+        torch: 2.13.0+cu130
+        cuda: True/False
+      render: shell
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I re-read the README troubleshooting section
+          required: false
+        - label: I ran `uv run python scripts/check_system.py` (for TimesFM issues)
+          required: false
+        - label: This is not an upstream-only TimesFM/PyCaret bug (or I linked upstream)
+          required: false

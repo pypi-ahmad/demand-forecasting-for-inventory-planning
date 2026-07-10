@@ -10,6 +10,7 @@ Both tracks are fully implemented, executed, and scored with identical metrics (
 | | |
 |---|---|
 | **Code license** | [MIT](LICENSE) |
+| **Community** | [Contributing](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [Issues](https://github.com/pypi-ahmad/demand-forecasting-for-inventory-planning/issues/new/choose) |
 | **Runtime** | Python **3.13.13**, [`uv`](https://github.com/astral-sh/uv), kernel `demand-forecast-project` |
 | **Classical** | `pycaret[timeseries]==4.0.0a8`, statsmodels, pmdarima |
 | **Foundation model** | `timesfm[torch]` → TimesFM 2.5 (`google/timesfm-2.5-200m-pytorch`, Apache-2.0 package) |

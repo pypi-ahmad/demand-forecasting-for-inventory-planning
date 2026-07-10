@@ -1,0 +1,59 @@
+name: Feature request
+description: Propose an improvement to notebooks, metrics, docs, or tooling
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the improvement and how it fits a fair, reproducible forecasting tutorial.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What is hard or missing today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should change? Keep scope tight if possible.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you thought about (optional but helpful).
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Data loading / cleaning
+        - EDA / granularity
+        - PyCaret survey
+        - Native classical reimplementation
+        - TimesFM integration
+        - Metrics / evaluation protocol
+        - Docs / README
+        - CLI / automation
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints you are OK keeping
+      options:
+        - label: Time-ordered splits (no random shuffle of series)
+          required: false
+        - label: Fair classical vs TimesFM comparison on the same holdout
+          required: false
+        - label: Evidence-based claims (real run numbers, not placeholders)
+          required: false
+        - label: No secrets or large weight dumps in git
+          required: false

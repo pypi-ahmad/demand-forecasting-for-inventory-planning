@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Project README
+    url: https://github.com/pypi-ahmad/demand-forecasting-for-inventory-planning#readme
+    about: Setup, real results, architecture, and limitations
+  - name: TimesFM upstream
+    url: https://github.com/google-research/timesfm
+    about: Issues specific to the TimesFM model/package (not this tutorial wrapper)
+  - name: PyCaret upstream
+    url: https://github.com/pycaret/pycaret
+    about: Issues specific to the PyCaret library
