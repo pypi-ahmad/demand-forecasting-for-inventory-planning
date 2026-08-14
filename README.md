@@ -527,7 +527,7 @@ Tutorials: `notebooks/05_superstore_accuracy_push.py`, `06_online_retail_ii_accu
 #### Superstore head-to-head (final holdout)
 
 | Metric | v1-like m=4 | v2 HW m=52 | **v4 holdout-best** | **v4 MW champion** |
-|--------|------------:|-----------:|--------------------:|-------------------:|
+|--------|------------:|-----------:|--------------------:|--------------------:|
 | MAE | 106.60 | 48.12 | **37.29** | 47.94 |
 | RMSE | 119.63 | 61.40 | **53.30** | 56.87 |
 | MAPE (%) | 27.27 | 11.44 | **8.93** | 11.74 |
@@ -562,7 +562,7 @@ Tutorials: `notebooks/05_superstore_accuracy_push.py`, `06_online_retail_ii_accu
 #### Retail II head-to-head (final holdout)
 
 | Metric | v2 HW m=13 | **v4 holdout-best bu_country** | **v4 MW hw_mul_m8** |
-|--------|-----------:|-------------------------------:|--------------------:|
+|--------|-----------:|--------------------------------:|---------------------:|
 | MAE | 22,453 | **21,420 (−4.6%)** | 27,624 (+23%) |
 | MAPE (%) | **11.91** | 12.02 (+0.9% rel.) | 13.88 |
 | MASE | 0.561 | **0.535 (−4.6%)** | 0.691 |
@@ -970,3 +970,5 @@ Notebooks print actual mean demand, preferred model’s mean point, and mean ban
 | Result CSVs under `data/results/` | OK |
 
 Re-verify against [v1 vs v2](#real-results--v1-baseline-vs-v2-production-bake-off), [v3](#real-results--v3-advanced-stack-new), and [v4](#real-results--v4-accuracy-push-new).
+
+<p align="center">Made with ❤️ by Ahmad Mujtaba</p>
