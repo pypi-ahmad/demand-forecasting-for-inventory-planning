@@ -88,6 +88,10 @@ Jupytext percent sources in `notebooks/*.py` are the canonical notebook
 sources. Their paired `.ipynb` files contain the verified TimesFM 3.0 outputs;
 re-run them to reproduce the results or evaluate your own data.
 
+Notebooks `01` and `02` are the current executed baseline. Notebooks `03`–`06`
+are optional extension sources and need a fresh execution before their comments
+or generated tables are used as TimesFM 3.0 evidence.
+
 ```powershell
 $env:PYTHONUTF8 = "1"
 uv run jupyter nbconvert --to notebook --execute --inplace notebooks/01_superstore_demand_forecast.ipynb
@@ -106,7 +110,8 @@ uv run jupytext --to ipynb notebooks/02_online_retail_ii_demand_forecast.py
 | Path | Purpose |
 |---|---|
 | `demand_forecast/` | Classical models, metrics, TimesFM 3.0 adapter, and bake-off pipelines |
-| `notebooks/` | Tutorial notebooks for Superstore and Online Retail II |
+| `notebooks/01`–`02` | Executed TimesFM 3.0 tutorials for Superstore and Online Retail II |
+| `notebooks/03`–`06` | Extension sources; re-execute before treating their outputs as current evidence |
 | `scripts/check_system.py` | CUDA and TimesFM 3.0 environment preflight |
 | `tests/` | Adapter contract tests that do not download weights |
 | `docs/archive/` | Clearly historical benchmark material |

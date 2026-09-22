@@ -10,7 +10,7 @@ Thanks for your interest in **Demand Forecasting for Inventory Planning**. This 
 
 ## Development setup
 
-```bash
+```powershell
 git clone https://github.com/pypi-ahmad/demand-forecasting-for-inventory-planning.git
 cd demand-forecasting-for-inventory-planning
 
@@ -22,12 +22,9 @@ uv run python scripts/check_system.py
 
 Optional: re-execute notebooks after changes.
 
-```bash
-uv run jupyter nbconvert --to notebook --execute \
-  notebooks/01_superstore_demand_forecast.ipynb \
-  --output 01_superstore_demand_forecast.ipynb \
-  --ExecutePreprocessor.timeout=3600 \
-  --ExecutePreprocessor.kernel_name=demand-forecast-project
+```powershell
+$env:PYTHONUTF8 = "1"
+uv run jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 notebooks/01_superstore_demand_forecast.ipynb
 ```
 
 Jupytext percent sources (`.py`) are the preferred place to edit analysis logic; regenerate `.ipynb` with `uv run jupytext --to ipynb notebooks/<name>.py` when needed.
@@ -81,7 +78,7 @@ Maintainers may ask for smaller diffs or additional evidence from a real run.
 
 ## Code style (lightweight)
 
-- Python 3.13+, type hints on non-trivial public helpers
+- Python 3.13.13, type hints on non-trivial public helpers
 - Prefer `pathlib`, f-strings, and explicit errors
 - No secrets in the tree
 - Prefer `uv add` / `uv lock` over bare `pip install`
