@@ -1,0 +1,548 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "louvain",
+  "totalFiles": 51,
+  "totalBatches": 5,
+  "exportsByPath": {
+    ".python-version": [],
+    ".ua/.understandignore": [],
+    ".ua/tmp/scan.stderr": [],
+    "demand_forecast/__init__.py": [],
+    "demand_forecast/accuracy_push/__init__.py": [],
+    "demand_forecast/accuracy_push/hierarchy_safe.py": [
+      "BottomUpResult",
+      "_hw",
+      "bottom_up_total",
+      "volume_scale",
+      "blend"
+    ],
+    "demand_forecast/accuracy_push/pipeline.py": [
+      "AccuracyPushResult",
+      "_hw_mul",
+      "_sigma_pi",
+      "_origin_splits",
+      "run_accuracy_push"
+    ],
+    "demand_forecast/advanced/__init__.py": [],
+    "demand_forecast/advanced/ensemble.py": [
+      "inverse_error_weights",
+      "blend_points",
+      "smart_stack_weights"
+    ],
+    "demand_forecast/advanced/evaluation.py": [
+      "rolling_origin_evaluate",
+      "summarize_rolling"
+    ],
+    "demand_forecast/advanced/features.py": [
+      "week_index",
+      "holiday_count_in_week",
+      "build_calendar_frame",
+      "aggregate_promo_proxy",
+      "make_future_exog"
+    ],
+    "demand_forecast/advanced/hierarchy.py": [
+      "HierarchyResult",
+      "_pick_period",
+      "forecast_bottom_series",
+      "build_bottom_panel",
+      "bottom_up_forecast"
+    ],
+    "demand_forecast/advanced/inventory.py": [
+      "InventoryScore",
+      "asymmetric_cost",
+      "quantile_order_quantity",
+      "safety_buffer_from_band"
+    ],
+    "demand_forecast/advanced/models_exog.py": [
+      "AdvForecast",
+      "_pi",
+      "_sigma_from_resid",
+      "forecast_hw_log",
+      "forecast_hw_mul",
+      "forecast_sarimax_exog",
+      "forecast_ml_lags",
+      "forecast_seasonal_naive"
+    ],
+    "demand_forecast/advanced/pipeline.py": [
+      "AdvancedRunResult",
+      "_best_period",
+      "_select_period_by_val",
+      "_mase_p",
+      "run_advanced_pipeline"
+    ],
+    "demand_forecast/bakeoff.py": [
+      "CandidateResult",
+      "ProductionBakeoffResult",
+      "_align_fc",
+      "_val_select_weights",
+      "run_production_bakeoff"
+    ],
+    "demand_forecast/classical.py": [
+      "ClassicalForecast",
+      "seasonal_periods_for_series",
+      "mase_period_for_series",
+      "_residual_sigma",
+      "_pi",
+      "forecast_seasonal_naive",
+      "forecast_holt_winters",
+      "forecast_auto_arima",
+      "build_classical_candidates"
+    ],
+    "demand_forecast/metrics.py": [
+      "forecast_metrics",
+      "metrics_table",
+      "pi_coverage",
+      "summarize_backtest"
+    ],
+    "demand_forecast/timesfm_runner.py": [
+      "TimesFMForecast",
+      "get_timesfm_model",
+      "forecast_timesfm"
+    ],
+    "main.py": [
+      "main"
+    ],
+    "notebooks/01_superstore_demand_forecast.ipynb": [],
+    "notebooks/01_superstore_demand_forecast.py": [
+      "show_plot",
+      "load_superstore",
+      "series_profile",
+      "forecast_metrics"
+    ],
+    "notebooks/02_online_retail_ii_demand_forecast.ipynb": [],
+    "notebooks/02_online_retail_ii_demand_forecast.py": [
+      "show_plot",
+      "series_profile",
+      "forecast_metrics"
+    ],
+    "notebooks/03_superstore_advanced_demand_forecast.py": [
+      "show_plot"
+    ],
+    "notebooks/04_online_retail_ii_advanced_demand_forecast.py": [
+      "show_plot"
+    ],
+    "notebooks/05_superstore_accuracy_push.py": [
+      "show_plot"
+    ],
+    "notebooks/06_online_retail_ii_accuracy_push.py": [
+      "show_plot"
+    ],
+    "scripts/check_system.py": [
+      "CheckResult",
+      "SystemReport",
+      "_get_total_ram_gb",
+      "_get_available_ram_gb",
+      "check_ram",
+      "check_gpu",
+      "check_disk",
+      "check_python",
+      "check_package",
+      "recommend_batch_size",
+      "estimate_memory_gb",
+      "check_dataset_fit",
+      "print_memory_estimate",
+      "run_checks",
+      "print_report",
+      "main"
+    ]
+  },
+  "batches": [
+    {
+      "batchIndex": 1,
+      "files": [
+        {
+          "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+          "language": "yaml",
+          "sizeLines": 86,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/config.yml",
+          "language": "yaml",
+          "sizeLines": 11,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+          "language": "yaml",
+          "sizeLines": 59,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/question.yml",
+          "language": "yaml",
+          "sizeLines": 34,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        ".github/ISSUE_TEMPLATE/bug_report.yml": [],
+        ".github/ISSUE_TEMPLATE/config.yml": [],
+        ".github/ISSUE_TEMPLATE/feature_request.yml": [],
+        ".github/ISSUE_TEMPLATE/question.yml": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 2,
+      "files": [
+        {
+          "path": "CODE_OF_CONDUCT.md",
+          "language": "markdown",
+          "sizeLines": 134,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "CONTRIBUTING.md",
+          "language": "markdown",
+          "sizeLines": 90,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "README.md",
+          "language": "markdown",
+          "sizeLines": 974,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "pyproject.toml",
+          "language": "toml",
+          "sizeLines": 26,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        "CODE_OF_CONDUCT.md": [],
+        "CONTRIBUTING.md": [],
+        "README.md": [],
+        "pyproject.toml": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 3,
+      "files": [
+        {
+          "path": "data/results/online_retail_ii_production_metrics.csv",
+          "language": "csv",
+          "sizeLines": 14,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/online_retail_ii_v2_v4_compare.csv",
+          "language": "csv",
+          "sizeLines": 4,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/online_retail_ii_v2_vs_v3.csv",
+          "language": "csv",
+          "sizeLines": 3,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/online_retail_ii_v3_accuracy.csv",
+          "language": "csv",
+          "sizeLines": 13,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/online_retail_ii_v3_inventory.csv",
+          "language": "csv",
+          "sizeLines": 13,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/online_retail_ii_v4_holdout.csv",
+          "language": "csv",
+          "sizeLines": 10,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/online_retail_ii_v4_multiwindow.csv",
+          "language": "csv",
+          "sizeLines": 10,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/superstore_production_metrics.csv",
+          "language": "csv",
+          "sizeLines": 16,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/superstore_v1_v2_v4_compare.csv",
+          "language": "csv",
+          "sizeLines": 5,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/superstore_v2_vs_v3.csv",
+          "language": "csv",
+          "sizeLines": 3,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/superstore_v3_accuracy.csv",
+          "language": "csv",
+          "sizeLines": 14,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/superstore_v3_inventory.csv",
+          "language": "csv",
+          "sizeLines": 14,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/superstore_v4_holdout.csv",
+          "language": "csv",
+          "sizeLines": 17,
+          "fileCategory": "data"
+        },
+        {
+          "path": "data/results/superstore_v4_multiwindow.csv",
+          "language": "csv",
+          "sizeLines": 17,
+          "fileCategory": "data"
+        }
+      ],
+      "batchImportData": {
+        "data/results/online_retail_ii_production_metrics.csv": [],
+        "data/results/online_retail_ii_v2_v4_compare.csv": [],
+        "data/results/online_retail_ii_v2_vs_v3.csv": [],
+        "data/results/online_retail_ii_v3_accuracy.csv": [],
+        "data/results/online_retail_ii_v3_inventory.csv": [],
+        "data/results/online_retail_ii_v4_holdout.csv": [],
+        "data/results/online_retail_ii_v4_multiwindow.csv": [],
+        "data/results/superstore_production_metrics.csv": [],
+        "data/results/superstore_v1_v2_v4_compare.csv": [],
+        "data/results/superstore_v2_vs_v3.csv": [],
+        "data/results/superstore_v3_accuracy.csv": [],
+        "data/results/superstore_v3_inventory.csv": [],
+        "data/results/superstore_v4_holdout.csv": [],
+        "data/results/superstore_v4_multiwindow.csv": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 4,
+      "files": [
+        {
+          "path": ".python-version",
+          "language": "unknown",
+          "sizeLines": 1,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".ua/.understandignore",
+          "language": "unknown",
+          "sizeLines": 78,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".ua/tmp/scan.stderr",
+          "language": "stderr",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/__init__.py",
+          "language": "python",
+          "sizeLines": 11,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/accuracy_push/__init__.py",
+          "language": "python",
+          "sizeLines": 8,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/accuracy_push/hierarchy_safe.py",
+          "language": "python",
+          "sizeLines": 125,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/accuracy_push/pipeline.py",
+          "language": "python",
+          "sizeLines": 321,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/advanced/__init__.py",
+          "language": "python",
+          "sizeLines": 10,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/advanced/ensemble.py",
+          "language": "python",
+          "sizeLines": 37,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/advanced/evaluation.py",
+          "language": "python",
+          "sizeLines": 64,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/advanced/features.py",
+          "language": "python",
+          "sizeLines": 113,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/advanced/hierarchy.py",
+          "language": "python",
+          "sizeLines": 155,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/advanced/inventory.py",
+          "language": "python",
+          "sizeLines": 69,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/advanced/models_exog.py",
+          "language": "python",
+          "sizeLines": 228,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/advanced/pipeline.py",
+          "language": "python",
+          "sizeLines": 375,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/bakeoff.py",
+          "language": "python",
+          "sizeLines": 271,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/classical.py",
+          "language": "python",
+          "sizeLines": 212,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/metrics.py",
+          "language": "python",
+          "sizeLines": 77,
+          "fileCategory": "code"
+        },
+        {
+          "path": "demand_forecast/timesfm_runner.py",
+          "language": "python",
+          "sizeLines": 73,
+          "fileCategory": "code"
+        },
+        {
+          "path": "main.py",
+          "language": "python",
+          "sizeLines": 6,
+          "fileCategory": "code"
+        },
+        {
+          "path": "notebooks/01_superstore_demand_forecast.ipynb",
+          "language": "ipynb",
+          "sizeLines": 2846,
+          "fileCategory": "code"
+        },
+        {
+          "path": "notebooks/01_superstore_demand_forecast.py",
+          "language": "python",
+          "sizeLines": 687,
+          "fileCategory": "code"
+        },
+        {
+          "path": "notebooks/02_online_retail_ii_demand_forecast.ipynb",
+          "language": "ipynb",
+          "sizeLines": 2525,
+          "fileCategory": "code"
+        },
+        {
+          "path": "notebooks/02_online_retail_ii_demand_forecast.py",
+          "language": "python",
+          "sizeLines": 651,
+          "fileCategory": "code"
+        },
+        {
+          "path": "notebooks/03_superstore_advanced_demand_forecast.py",
+          "language": "python",
+          "sizeLines": 306,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        ".python-version": [],
+        ".ua/.understandignore": [],
+        ".ua/tmp/scan.stderr": [],
+        "demand_forecast/__init__.py": [],
+        "demand_forecast/accuracy_push/__init__.py": [],
+        "demand_forecast/accuracy_push/hierarchy_safe.py": [],
+        "demand_forecast/accuracy_push/pipeline.py": [],
+        "demand_forecast/advanced/__init__.py": [],
+        "demand_forecast/advanced/ensemble.py": [],
+        "demand_forecast/advanced/evaluation.py": [],
+        "demand_forecast/advanced/features.py": [],
+        "demand_forecast/advanced/hierarchy.py": [],
+        "demand_forecast/advanced/inventory.py": [],
+        "demand_forecast/advanced/models_exog.py": [],
+        "demand_forecast/advanced/pipeline.py": [],
+        "demand_forecast/bakeoff.py": [],
+        "demand_forecast/classical.py": [],
+        "demand_forecast/metrics.py": [],
+        "demand_forecast/timesfm_runner.py": [],
+        "main.py": [],
+        "notebooks/01_superstore_demand_forecast.ipynb": [],
+        "notebooks/01_superstore_demand_forecast.py": [],
+        "notebooks/02_online_retail_ii_demand_forecast.ipynb": [],
+        "notebooks/02_online_retail_ii_demand_forecast.py": [],
+        "notebooks/03_superstore_advanced_demand_forecast.py": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 5,
+      "files": [
+        {
+          "path": "notebooks/04_online_retail_ii_advanced_demand_forecast.py",
+          "language": "python",
+          "sizeLines": 239,
+          "fileCategory": "code"
+        },
+        {
+          "path": "notebooks/05_superstore_accuracy_push.py",
+          "language": "python",
+          "sizeLines": 250,
+          "fileCategory": "code"
+        },
+        {
+          "path": "notebooks/06_online_retail_ii_accuracy_push.py",
+          "language": "python",
+          "sizeLines": 221,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/check_system.py",
+          "language": "python",
+          "sizeLines": 738,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "notebooks/04_online_retail_ii_advanced_demand_forecast.py": [],
+        "notebooks/05_superstore_accuracy_push.py": [],
+        "notebooks/06_online_retail_ii_accuracy_push.py": [],
+        "scripts/check_system.py": []
+      },
+      "neighborMap": {}
+    }
+  ]
+}
