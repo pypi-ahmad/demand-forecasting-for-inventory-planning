@@ -1,6 +1,6 @@
 # Demand Forecasting for Inventory Planning
 
-**Tutorial + portfolio project:** forecast **aggregate unit demand** (not revenue) for inventory decisions. The repo is layered so **older notebooks stay intact for learning**, while newer notebooks add stronger techniques:
+**Tutorial + portfolio project:** forecast **aggregate unit demand** for inventory decisions. The repository keeps the older notebooks available for learning and adds newer notebooks with stronger techniques:
 
 | Generation | Notebooks | Focus |
 |------------|-----------|--------|
@@ -9,7 +9,7 @@
 | **v3** | **`03`, `04` (do not edit 01/02)** | Hierarchy, calendar/promo, inventory cost, smart stack (process layer) |
 | **v4** | **`05`, `06` (do not edit 01–04)** | **Accuracy push**: safe Category×Region / Country bottom-up, volume scaling, multi-window champion selection |
 
-All tracks use the **same weekly series and H=8 holdout** where compared. Metrics are from real runs—not placeholders.
+All tracks use the **same weekly series and H=8 holdout** where compared. The metrics come from completed runs.
 
 | | |
 |---|---|
@@ -61,11 +61,11 @@ Jupytext percent sources (`.py`) sit beside notebooks for script debugging.
 
 ## Design goals
 
-1. **Evidence over folklore** — granularity (daily vs weekly), model winner, and “which approach won” are decided from **this run’s numbers**, not from generic Superstore/TimesFM blog posts.  
-2. **Survey ≠ deliverable** — PyCaret narrows the field quickly; the real classical deliverable is a **native** fit with residuals and intervals.  
-3. **Fair comparison** — same series, same holdout horizon `H`, same metric functions for classical and TimesFM.  
-4. **Reproducible env** — single `uv` lockfile, pinned Python, registered Jupyter kernel, TimesFM system preflight script.  
-5. **Honest failure modes** — e.g. `ucimlrepo` id 502 is often not importable; notebooks fall back to the **official UCI zip** and document that.
+1. **Evidence over folklore:** granularity (daily vs weekly), model winner, and “which approach won” come from **this run’s numbers**, rather than generic Superstore or TimesFM blog posts.  
+2. **Survey and deliverable:** PyCaret narrows the field quickly. The classical deliverable is a **native** fit with residuals and intervals.  
+3. **Fair comparison:** the models use the same series, holdout horizon `H`, and metric functions.  
+4. **Reproducible environment:** one `uv` lockfile, a pinned Python version, a registered Jupyter kernel, and a TimesFM preflight script.  
+5. **Known failure modes:** `ucimlrepo` id 502 is often unavailable, so the notebooks fall back to the **official UCI zip** and document the fallback.
 
 ## Architecture
 
@@ -205,12 +205,12 @@ Shared data facts (unchanged between v1 and v2):
 
 **Why these techniques improve retail unit demand**
 
-1. **Seasonal period search** — Short cycles (`m=4`) miss **annual** retail peaks. Superstore needs ~`m=52`; Retail II (shorter history) wins with ~`m=13` (quarterly weeks), not forced `m=52` when train &lt; 2×52.  
+1. **Seasonal period search:** short cycles (`m=4`) miss **annual** retail peaks. Superstore needs about `m=52`; Retail II, with less history, wins with about `m=13` (quarterly weeks). The notebooks do not force `m=52` when train &lt; 2×52.  
 2. **Multiplicative seasonality** — Peak weeks scale with level (holiday / year-end). Additive ETS under-forecasted both holdouts.  
-3. **Seasonal naive baseline** — Always in the bake-off; prevents “complex but worse” models from shipping.  
-4. **Rolling-origin** — One lucky 8-week cut is not production gating; v2 re-fits over multiple origins.  
-5. **TimesFM kept as peer, not assumed winner** — Strong on multi-series / cold-start ops; on these **single** seasonal aggregates, a well-specified HW often wins holdout.  
-6. **PyCaret retained for teaching** — Fast OOP survey (v1-style); **shipping decision** uses the bake-off champion.
+3. **Seasonal naive baseline:** it stays in the bake-off so a more complex model has to beat a simple reference.  
+4. **Rolling-origin evaluation:** v2 refits over multiple origins instead of relying on one 8-week cut.  
+5. **TimesFM remains a peer:** it can work well for multi-series and cold-start operations, while a well-specified HW model often wins on these **single** seasonal aggregates.  
+6. **PyCaret remains for teaching:** the fast OOP survey is useful for exploration; the bake-off champion drives the shipping decision.
 
 ---
 
@@ -615,7 +615,7 @@ Artifacts:
 - `data/results/online_retail_ii_v4_holdout.csv`, `online_retail_ii_v4_multiwindow.csv`, `online_retail_ii_v2_v4_compare.csv`
 ---
 
-## Honest limitations
+## Limitations
 
 1. **PyCaret 4.0.0a8 is alpha** — API and model registry may change; pin the version.  
 2. **Survey ≠ exhaustive AutoML** — classical shortlist only; some candidates can fail silently (`errors="ignore"`).  
