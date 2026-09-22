@@ -21,7 +21,7 @@
 # 1. **Part 1 — PyCaret 4.x time-series survey (MASE-ranked)** → native
 #    reimplementation of the winner with residual diagnostics + prediction
 #    intervals.
-# 2. **Part 2 — Google TimesFM 2.5 zero-shot** (history as inference context,
+# 2. **Part 2 — Google TimesFM 3.0 zero-shot** (history as inference context,
 #    no gradient updates on this series).
 #
 # **Business framing.** Online retail demand is intermittent at the SKU level
@@ -37,7 +37,7 @@
 # ## 1. Setup
 #
 # Shared `demand-forecast-project` kernel (uv-managed). PyCaret 4.x OOP API;
-# TimesFM 2.5 via `timesfm[torch]`.
+# TimesFM 3.0 via `timesfm[torch]`.
 
 # %%
 from __future__ import annotations
@@ -111,13 +111,13 @@ if torch.cuda.is_available():
     print(f"GPU           : {torch.cuda.get_device_name(0)}")
 
 import pycaret
-import timesfm
+from timesfm3 import TimesFM3Forecaster
 
 print(f"pycaret       : {pycaret.__version__}")
-print(f"timesfm 2.5   : TimesFM_2p5_200M_torch={hasattr(timesfm, 'TimesFM_2p5_200M_torch')}")
+print(f"timesfm 3.0   : TimesFM3Forecaster={TimesFM3Forecaster.__name__}")
 print(f"Kernel target : demand-forecast-project")
 assert pycaret.__version__.startswith("4."), "Expected PyCaret 4.x OOP API"
-assert hasattr(timesfm, "TimesFM_2p5_200M_torch"), "TimesFM 2.5 torch class missing"
+assert torch.cuda.is_available(), "TimesFM 3.0 requires CUDA-enabled PyTorch"
 
 # %% [markdown]
 # ## 2. Data acquisition — UCI Online Retail II (id 502)
@@ -570,7 +570,7 @@ y_test.plot(ax=ax, label="actual test", color="black", lw=2)
 champ_fc.plot(ax=ax, label=f"champion: {champ.name}", color="darkorange", lw=2)
 ax.fill_between(y_test.index, champ_lo, champ_hi, color="darkorange", alpha=0.2, label="PI")
 if tfm_row is not None and tfm_row.name != champ.name:
-    pd.Series(tfm_row.point, index=y_test.index).plot(ax=ax, label="TimesFM 2.5", color="purple", lw=1.5)
+    pd.Series(tfm_row.point, index=y_test.index).plot(ax=ax, label="TimesFM 3.0", color="purple", lw=1.5)
 ax.set_title("Production champion — Online Retail II")
 ax.set_ylabel("Units")
 ax.legend()

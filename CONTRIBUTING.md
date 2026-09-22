@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in **Demand Forecasting for Inventory Planning**. This repository is a tutorial-style forecasting project with executed PyCaret time-series surveys and Google TimesFM 2.5 runs. Contributions that improve correctness, reproducibility, documentation, or teaching clarity are welcome.
+Thanks for your interest in **Demand Forecasting for Inventory Planning**. This repository is a tutorial-style forecasting project with PyCaret time-series surveys and a CUDA-only Google TimesFM 3.0 baseline. Contributions that improve correctness, reproducibility, documentation, or teaching clarity are welcome.
 
 ## Before you start
 
@@ -54,7 +54,7 @@ Jupytext percent sources (`.py`) are the preferred place to edit analysis logic;
 Use the **Bug report** issue template. Include:
 
 - OS and `uv run python -V`
-- `pycaret`, `timesfm`, `torch` versions (and CUDA yes/no)
+- `pycaret`, `timesfm3`, `torch` versions, CUDA version, and GPU name
 - Exact command and full traceback
 - Which notebook / cell failed
 
@@ -63,7 +63,8 @@ Use the **Bug report** issue template. Include:
 Use the **Feature request** template. Prefer changes that:
 
 - Preserve train/test **time order**
-- Keep classical vs TimesFM comparison **fair** (same holdout, same metrics)
+- Keep classical vs TimesFM comparison **fair** (same holdout, same metrics).
+- Do not present archived outputs as TimesFM 3.0 results.
 - Stay honest about limitations
 
 ## Pull requests
@@ -87,4 +88,4 @@ Maintainers may ask for smaller diffs or additional evidence from a real run.
 
 ## Questions
 
-Open a **Question** issue, or a blank issue if the templates do not fit. For dataset licensing, cite the UCI, Superstore, and TimesFM terms separately from the MIT code license in the README.
+Open a **Question** issue, or a blank issue if the templates do not fit. For dataset licensing, cite the UCI, Superstore, and TimesFM terms separately from the MIT code license in the README. TimesFM 3.0 weights are restricted to non-commercial, non-production use.

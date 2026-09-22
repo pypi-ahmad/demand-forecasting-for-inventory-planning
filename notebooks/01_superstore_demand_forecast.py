@@ -21,7 +21,7 @@
 # 1. **Part 1 — classical / ML survey with PyCaret 4.x**, then a *native*
 #    reimplementation of the winner (statsmodels / pmdarima), with residual
 #    diagnostics and prediction intervals.
-# 2. **Part 2 — Google TimesFM 2.5** zero-shot foundation-model forecast
+# 2. **Part 2 — Google TimesFM 3.0** zero-shot foundation-model forecast
 #    (no gradient updates on this series; history is inference-time context).
 #
 # **Business framing.** Inventory planning lives or dies on *units* over time,
@@ -39,7 +39,7 @@
 #
 # We pin a single `uv`-managed kernel (`demand-forecast-project`) for both
 # notebooks in this project. PyCaret **4.0** is OOP-only
-# (`TimeSeriesExperiment`); TimesFM **2.5** is loaded via `timesfm[torch]`.
+# (`TimeSeriesExperiment`); TimesFM **3.0** is loaded via `timesfm[torch]`.
 
 # %%
 from __future__ import annotations
@@ -110,13 +110,13 @@ if torch.cuda.is_available():
     print(f"GPU           : {torch.cuda.get_device_name(0)}")
 
 import pycaret
-import timesfm
+from timesfm3 import TimesFM3Forecaster
 
 print(f"pycaret       : {pycaret.__version__}")
-print(f"timesfm 2.5   : TimesFM_2p5_200M_torch={hasattr(timesfm, 'TimesFM_2p5_200M_torch')}")
+print(f"timesfm 3.0   : TimesFM3Forecaster={TimesFM3Forecaster.__name__}")
 print(f"Kernel target : demand-forecast-project")
 assert pycaret.__version__.startswith("4."), "Expected PyCaret 4.x OOP API"
-assert hasattr(timesfm, "TimesFM_2p5_200M_torch"), "TimesFM 2.5 torch class missing"
+assert torch.cuda.is_available(), "TimesFM 3.0 requires CUDA-enabled PyTorch"
 
 # %% [markdown]
 # ## 2. Data acquisition — Superstore Sales
@@ -495,7 +495,7 @@ print(winner_row.to_string())
 # 4. **TimesFM zero-shot** remains a strong foundation baseline with quantile bands.
 #
 # PyCaret (above) is the educational survey. Below is the **production bake-off**
-# implemented in `demand_forecast/` — native statsmodels/pmdarima + TimesFM 2.5,
+# implemented in `demand_forecast/` — native statsmodels/pmdarima + TimesFM 3.0,
 # nested validation weights, holdout metrics, and rolling-origin robustness.
 
 # %%
@@ -562,7 +562,7 @@ champ_fc.plot(ax=ax, label=f"champion: {champ.name}", color="darkorange", lw=2)
 ax.fill_between(y_test.index, champ_lo, champ_hi, color="darkorange", alpha=0.2, label="PI band")
 if tfm_row is not None and tfm_row.name != champ.name:
     pd.Series(tfm_row.point, index=y_test.index).plot(
-        ax=ax, label="TimesFM 2.5", color="purple", lw=1.5, alpha=0.85
+        ax=ax, label="TimesFM 3.0", color="purple", lw=1.5, alpha=0.85
     )
 ax.set_title("Production champion forecast vs holdout")
 ax.set_ylabel("Units")
