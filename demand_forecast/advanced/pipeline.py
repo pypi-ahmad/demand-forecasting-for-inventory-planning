@@ -9,7 +9,10 @@ import numpy as np
 import pandas as pd
 
 from demand_forecast.advanced.ensemble import blend_points, smart_stack_weights
-from demand_forecast.advanced.evaluation import rolling_origin_evaluate, summarize_rolling
+from demand_forecast.advanced.evaluation import (
+    rolling_origin_evaluate,
+    summarize_rolling,
+)
 from demand_forecast.advanced.features import build_calendar_frame
 from demand_forecast.advanced.hierarchy import bottom_up_forecast, build_bottom_panel
 from demand_forecast.advanced.inventory import (
@@ -26,7 +29,7 @@ from demand_forecast.advanced.models_exog import (
     forecast_seasonal_naive,
 )
 from demand_forecast.metrics import forecast_metrics, metrics_table
-from demand_forecast.timesfm_runner import forecast_timesfm
+from demand_forecast.timesfm_runner import TIMESFM3_CANDIDATE_NAME, forecast_timesfm
 
 
 @dataclass
@@ -160,15 +163,15 @@ def run_advanced_pipeline(
     except Exception as exc:  # noqa: BLE001
         notes.append(f"hgb_lags_exog failed: {exc}")
 
-    # 6) TimesFM zero-shot (no jax xreg required)
+    # 6) TimesFM 3.0 zero-shot (univariate adapter)
     try:
         tfm = forecast_timesfm(y_train, h)
-        forecasts["timesfm_zeroshot"] = AdvForecast(
-            name="timesfm_zeroshot",
+        forecasts[TIMESFM3_CANDIDATE_NAME] = AdvForecast(
+            name=TIMESFM3_CANDIDATE_NAME,
             point=tfm.point,
             lower=tfm.lower,
             upper=tfm.upper,
-            details=tfm.details + " | XReg optional (needs timesfm[xreg]+jax; not required here)",
+            details=tfm.details + " | univariate adapter; covariates are out of scope",
             quantiles={"q10": tfm.lower, "q50": tfm.point, "q90": tfm.upper},
         )
     except Exception as exc:  # noqa: BLE001
@@ -221,7 +224,7 @@ def run_advanced_pipeline(
         builders: dict[str, Any] = {
             "seasonal_naive": lambda: forecast_seasonal_naive(y_fit, h, period).point,
             "hw_log1p": lambda: forecast_hw_log(y_fit, h, period=period).point,
-            "timesfm_zeroshot": lambda: forecast_timesfm(y_fit, h).point,
+            TIMESFM3_CANDIDATE_NAME: lambda: forecast_timesfm(y_fit, h).point,
         }
         for p in period_candidates:
             builders[f"hw_mul_m{p}"] = (
@@ -347,7 +350,7 @@ def run_advanced_pipeline(
 
     _roll("hw_mul", lambda tr, hh: forecast_hw_mul(tr, hh, period=_best_period(len(tr))).point)
     _roll("seasonal_naive", lambda tr, hh: forecast_seasonal_naive(tr, hh, _best_period(len(tr))).point)
-    _roll("timesfm_zeroshot", lambda tr, hh: forecast_timesfm(tr, hh).point)
+    _roll(TIMESFM3_CANDIDATE_NAME, lambda tr, hh: forecast_timesfm(tr, hh).point)
 
     notes.append(
         f"champion_by_asymmetric_cost={champion_name} "

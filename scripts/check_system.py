@@ -7,9 +7,6 @@ installation so the agent never crashes a user's machine.
 
 Usage:
     python check_system.py
-    python check_system.py --model v2.5   # default
-    python check_system.py --model v2.0   # archived 500M model
-    python check_system.py --model v1.0   # archived 200M model
     python check_system.py --json         # machine-readable output
 """
 
@@ -17,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import platform
 import shutil
@@ -25,43 +23,21 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-import math
-
 
 # ---------------------------------------------------------------------------
 # Model requirement profiles
 # ---------------------------------------------------------------------------
 
 MODEL_PROFILES: dict[str, dict[str, Any]] = {
-    "v2.5": {
-        "name": "TimesFM 2.5 (200M)",
-        "params": "200M",
-        "min_ram_gb": 2.0,
-        "recommended_ram_gb": 4.0,
-        "min_vram_gb": 2.0,
-        "recommended_vram_gb": 4.0,
-        "disk_gb": 2.0,  # model weights + overhead
-        "hf_repo": "google/timesfm-2.5-200m-pytorch",
-    },
-    "v2.0": {
-        "name": "TimesFM 2.0 (500M)",
-        "params": "500M",
+    "v3.0": {
+        "name": "TimesFM 3.0 (330M)",
+        "params": "330M",
         "min_ram_gb": 8.0,
         "recommended_ram_gb": 16.0,
-        "min_vram_gb": 4.0,
+        "min_vram_gb": 8.0,
         "recommended_vram_gb": 8.0,
         "disk_gb": 4.0,
-        "hf_repo": "google/timesfm-2.0-500m-pytorch",
-    },
-    "v1.0": {
-        "name": "TimesFM 1.0 (200M)",
-        "params": "200M",
-        "min_ram_gb": 4.0,
-        "recommended_ram_gb": 8.0,
-        "min_vram_gb": 2.0,
-        "recommended_vram_gb": 4.0,
-        "disk_gb": 2.0,
-        "hf_repo": "google/timesfm-1.0-200m-pytorch",
+        "hf_repo": "google/timesfm-3.0-pytorch",
     },
 }
 
@@ -260,44 +236,47 @@ def check_ram(profile: dict[str, Any]) -> CheckResult:
         )
 
 
-def check_gpu() -> CheckResult:
-    """Check GPU availability and VRAM."""
-    # Try CUDA first
+def check_gpu(profile: dict[str, Any]) -> CheckResult:
+    """Require a CUDA GPU with enough VRAM for TimesFM 3.0."""
     try:
         import torch
 
         if torch.cuda.is_available():
             name = torch.cuda.get_device_name(0)
             vram = torch.cuda.get_device_properties(0).total_memory / (1024**3)
+            # Nominal 8 GB cards are commonly reported a few MiB below 8.0 GiB.
+            if vram + 0.25 < profile["min_vram_gb"]:
+                return CheckResult(
+                    name="GPU",
+                    status="fail",
+                    detail=(
+                        f"{name} has {vram:.1f} GB VRAM but {profile['name']} "
+                        f"requires at least {profile['min_vram_gb']:.0f} GB."
+                    ),
+                    value=f"{name} | VRAM: {vram:.1f} GB | CUDA: {torch.version.cuda}",
+                )
             return CheckResult(
                 name="GPU",
                 status="pass",
-                detail=f"{name} with {vram:.1f} GB VRAM detected.",
-                value=f"{name} | VRAM: {vram:.1f} GB",
-            )
-        elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-            return CheckResult(
-                name="GPU",
-                status="pass",
-                detail="Apple Silicon MPS backend available. Uses unified memory.",
-                value="Apple Silicon MPS",
+                detail=f"{name} with {vram:.1f} GB VRAM and CUDA {torch.version.cuda} detected.",
+                value=f"{name} | VRAM: {vram:.1f} GB | CUDA: {torch.version.cuda}",
             )
         else:
             return CheckResult(
                 name="GPU",
-                status="warn",
+                status="fail",
                 detail=(
-                    "No GPU detected. TimesFM will run on CPU (slower but functional). "
-                    "Install CUDA-enabled PyTorch for GPU acceleration."
+                    "CUDA-enabled PyTorch did not detect a GPU. TimesFM 3.0 is "
+                    "configured for CUDA-only execution in this project."
                 ),
-                value="None (CPU only)",
+                value="No CUDA GPU",
             )
     except ImportError:
         return CheckResult(
             name="GPU",
-            status="warn",
-            detail="PyTorch not installed — cannot check GPU. Install torch first.",
-            value="Unknown (torch not installed)",
+            status="fail",
+            detail="PyTorch is not installed, so CUDA cannot be verified.",
+            value="PyTorch unavailable",
         )
 
 
@@ -382,55 +361,17 @@ def check_package(pkg_name: str, import_name: str | None = None) -> CheckResult:
 
 
 def recommend_batch_size(report: SystemReport) -> int:
-    """Recommend per_core_batch_size based on available resources."""
-    total_ram = _get_total_ram_gb()
-
-    # Check if GPU is available
+    """Return the fixed TimesFM 3.0 adapter batch size."""
     gpu_check = next((c for c in report.checks if c.name == "GPU"), None)
-
-    if gpu_check and gpu_check.status == "pass" and "VRAM" in gpu_check.value:
-        # Extract VRAM
-        try:
-            vram_str = gpu_check.value.split("VRAM:")[1].strip().split()[0]
-            vram = float(vram_str)
-            if vram >= 24:
-                return 256
-            elif vram >= 16:
-                return 128
-            elif vram >= 8:
-                return 64
-            elif vram >= 4:
-                return 32
-            else:
-                return 16
-        except (ValueError, IndexError):
-            return 32
-    elif gpu_check and "MPS" in gpu_check.value:
-        # Apple Silicon — use unified memory heuristic
-        if total_ram >= 32:
-            return 64
-        elif total_ram >= 16:
-            return 32
-        else:
-            return 16
-    else:
-        # CPU only
-        if total_ram >= 32:
-            return 64
-        elif total_ram >= 16:
-            return 32
-        elif total_ram >= 8:
-            return 8
-        else:
-            return 4
+    return 4 if gpu_check and gpu_check.status == "pass" else 0
 
 
 def estimate_memory_gb(
     num_series: int,
     context_length: int,
     horizon: int = 0,
-    batch_size: int = 32,
-    model_version: str = "v2.5",
+    batch_size: int = 4,
+    model_version: str = "v3.0",
 ) -> dict[str, float]:
     """Estimate memory requirements for a dataset.
 
@@ -445,8 +386,8 @@ def estimate_memory_gb(
         Dictionary with memory estimates in GB for different components
     """
     # Base model memory (weights + overhead)
-    model_memory_gb = 0.8  # ~800MB for model weights
-    overhead_gb = 0.5  # Python overhead, libraries, etc.
+    model_memory_gb = 1.3  # 330M fp32 parameters plus serialized metadata
+    overhead_gb = 1.0  # Python, CUDA runtime, and inference workspace baseline
 
     # Input data memory: each value is float32 (4 bytes)
     # Formula: num_series * context_length * 4 bytes / (1024^3)
@@ -457,8 +398,8 @@ def estimate_memory_gb(
     batch_input_gb = (batch_size * context_length * 4) / (1024**3)
 
     # Output memory: horizon * num_series * quantiles * 4 bytes
-    # Default is 10 quantiles (mean + 9 quantiles)
-    num_quantiles = 10
+    # TimesFM 3.0 returns nine quantiles (q10 through q90).
+    num_quantiles = 9
     output_gb = (num_series * horizon * num_quantiles * 4) / (1024**3) if horizon > 0 else 0
 
     # Total memory with some headroom for intermediate computations
@@ -482,8 +423,8 @@ def check_dataset_fit(
     num_series: int,
     context_length: int,
     horizon: int = 0,
-    batch_size: int = 32,
-    model_version: str = "v2.5",
+    batch_size: int = 4,
+    model_version: str = "v3.0",
 ) -> tuple[bool, str, dict[str, float]]:
     """Check if a dataset will fit in available memory.
 
@@ -540,8 +481,8 @@ def print_memory_estimate(
     num_series: int,
     context_length: int,
     horizon: int = 0,
-    batch_size: int = 32,
-    model_version: str = "v2.5",
+    batch_size: int = 4,
+    model_version: str = "v3.0",
 ) -> None:
     """Print a detailed memory estimate for a dataset.
 
@@ -592,28 +533,44 @@ def print_memory_estimate(
 # ---------------------------------------------------------------------------
 
 
-def run_checks(model_version: str = "v2.5") -> SystemReport:
+def check_timesfm3() -> CheckResult:
+    """Verify the public TimesFM 3.0 PyTorch interface is installed."""
+    try:
+        from timesfm3 import TimesFM3Forecaster  # noqa: F401
+    except ImportError:
+        return CheckResult(
+            name="timesfm3",
+            status="fail",
+            detail="TimesFM 3.0 is not installed. Run `uv sync --locked`.",
+            value="Not installed",
+        )
+    return CheckResult(
+        name="timesfm3",
+        status="pass",
+        detail="TimesFM3Forecaster is importable.",
+        value="Installed",
+    )
+
+
+def run_checks(model_version: str = "v3.0") -> SystemReport:
     """Run all system checks and return a report."""
     profile = MODEL_PROFILES[model_version]
     report = SystemReport(model=profile["name"])
 
     # Run checks
     report.checks.append(check_ram(profile))
-    report.checks.append(check_gpu())
+    report.checks.append(check_gpu(profile))
     report.checks.append(check_disk(profile))
     report.checks.append(check_python())
-    report.checks.append(check_package("timesfm"))
+    report.checks.append(check_timesfm3())
     report.checks.append(check_package("torch"))
 
     # Determine mode
     gpu_check = next((c for c in report.checks if c.name == "GPU"), None)
     if gpu_check and gpu_check.status == "pass":
-        if "MPS" in gpu_check.value:
-            report.mode = "mps"
-        else:
-            report.mode = "gpu"
+        report.mode = "gpu"
     else:
-        report.mode = "cpu"
+        report.mode = "unavailable"
 
     # Batch size
     report.recommended_batch_size = recommend_batch_size(report)
@@ -656,12 +613,6 @@ def main() -> None:
         description="Check system requirements for TimesFM.",
     )
     parser.add_argument(
-        "--model",
-        choices=list(MODEL_PROFILES.keys()),
-        default="v2.5",
-        help="Model version to check requirements for (default: v2.5)",
-    )
-    parser.add_argument(
         "--json",
         action="store_true",
         help="Output results as JSON (machine-readable)",
@@ -691,8 +642,8 @@ def main() -> None:
         "--batch-size",
         type=int,
         metavar="SIZE",
-        default=32,
-        help="per_core_batch_size from ForecastConfig (default: 32)",
+        default=4,
+        help="TimesFM 3.0 per_core_batch_size (default: 4)",
     )
     dataset_group.add_argument(
         "--estimate-only",
@@ -708,12 +659,12 @@ def main() -> None:
             args.context_length,
             args.horizon,
             args.batch_size,
-            args.model,
+            "v3.0",
         )
         sys.exit(0)
 
     # Run system checks
-    report = run_checks(args.model)
+    report = run_checks()
 
     # Add dataset check if parameters provided
     if args.num_series and args.context_length:
@@ -722,7 +673,7 @@ def main() -> None:
             args.context_length,
             args.horizon,
             args.batch_size,
-            args.model,
+            "v3.0",
         )
 
     if args.json:

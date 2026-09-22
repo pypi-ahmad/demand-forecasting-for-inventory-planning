@@ -20,7 +20,7 @@ from demand_forecast.advanced.features import (
 )
 from demand_forecast.advanced.inventory import asymmetric_cost, quantile_order_quantity
 from demand_forecast.metrics import forecast_metrics, metrics_table
-from demand_forecast.timesfm_runner import forecast_timesfm
+from demand_forecast.timesfm_runner import TIMESFM3_CANDIDATE_NAME, forecast_timesfm
 
 
 @dataclass
@@ -114,7 +114,7 @@ def run_accuracy_push(
     def _tfm(tr: pd.Series, hh: int) -> np.ndarray:
         return forecast_timesfm(tr, hh).point
 
-    candidates["timesfm_zeroshot"] = _tfm
+    candidates[TIMESFM3_CANDIDATE_NAME] = _tfm
 
     # hierarchy bottom-up per spec
     for groups in hierarchy_specs:

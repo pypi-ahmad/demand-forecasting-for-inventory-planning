@@ -14,7 +14,11 @@ from demand_forecast.classical import (
     mase_period_for_series,
 )
 from demand_forecast.metrics import forecast_metrics, metrics_table, pi_coverage
-from demand_forecast.timesfm_runner import TimesFMForecast, forecast_timesfm
+from demand_forecast.timesfm_runner import (
+    TIMESFM3_CANDIDATE_NAME,
+    TimesFMForecast,
+    forecast_timesfm,
+)
 
 
 @dataclass
@@ -230,7 +234,7 @@ def run_production_bakeoff(
             local: list[tuple[str, np.ndarray]] = [(c.name, c.point) for c in cands]
             if include_timesfm:
                 local.append(
-                    ("timesfm_2p5_zeroshot", forecast_timesfm(y_tr, h).point)
+                    (TIMESFM3_CANDIDATE_NAME, forecast_timesfm(y_tr, h).point)
                 )
             # score on nested val if possible
             best_name, best_point = local[0]
