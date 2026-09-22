@@ -21,6 +21,6 @@ dependencies = [
     "scipy>=1.18.0",
     "seaborn>=0.13.2",
     "statsmodels>=0.14.6",
-    "timesfm[torch,xreg]>=2.0.2",
+    "timesfm[torch]>=2.0.2",
     "ucimlrepo>=0.0.7",
 ]

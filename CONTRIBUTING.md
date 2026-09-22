@@ -15,7 +15,7 @@ git clone https://github.com/pypi-ahmad/demand-forecasting-for-inventory-plannin
 cd demand-forecasting-for-inventory-planning
 
 uv python install 3.13.13
-uv sync
+uv sync --locked
 uv run python -m ipykernel install --user --name demand-forecast-project
 uv run python scripts/check_system.py
 ```

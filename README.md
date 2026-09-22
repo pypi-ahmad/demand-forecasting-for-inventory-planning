@@ -652,7 +652,7 @@ cd "/path/to/Demand Forecasting for Inventory Planning"
 uv python install 3.13.13
 
 # Env + deps (from lockfile)
-uv sync
+uv sync --locked
 
 # Jupyter kernel used by both notebooks
 uv run python -m ipykernel install --user --name demand-forecast-project
@@ -666,6 +666,8 @@ Expected preflight shape on a capable machine:
 ```text
 VERDICT: ✅ System is ready for TimesFM 2.5 (200M) (GPU mode)
 ```
+
+The default install includes `timesfm[torch]`. XReg support remains optional and requires `timesfm[xreg]` plus JAX; it is not part of the locked Windows setup.
 
 Confirm imports:
 
@@ -749,7 +751,7 @@ Place as `data/online_retail_ii.zip` and re-run notebook 02.
 
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
-| `requires-python` / pin conflict | System Python 3.14 vs project 3.13 | `uv python pin 3.13.13` and `uv sync` |
+| `requires-python` / pin conflict | System Python 3.14 vs project 3.13 | `uv python pin 3.13.13` and `uv sync --locked` |
 | `DatasetNotFoundError` id 502 | UCI disables Python import for 502 | Expected — notebook falls back to zip; ensure network or pre-seed `data/` |
 | Superstore many NaT dates | Parsed as US M/D without `dayfirst` | Notebook uses `dayfirst=True`; do not switch to naive `to_datetime` |
 | `compare_models` hangs | Seasonal `m=52` + auto_arima | Keep shortlist + `seasonal_period=4`; exclude `auto_arima` from survey if needed |
@@ -959,7 +961,7 @@ Notebooks print actual mean demand, preferred model’s mean point, and mean ban
 
 | Check | Status on last full verification |
 |-------|----------------------------------|
-| `uv sync` env Python 3.13.13 | OK |
+| `uv sync --locked` env Python 3.13.13 | OK |
 | Kernel `demand-forecast-project` | OK |
 | TimesFM system check | READY (GPU) |
 | NB01 / NB02 executed (v1+v2) | OK |
