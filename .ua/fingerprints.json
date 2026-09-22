@@ -1,0 +1,2873 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "c521eae15dad95bc1c62c65dae1008f3cd029187",
+  "generatedAt": "2026-09-22T07:35:41.294Z",
+  "files": {
+    ".github/ISSUE_TEMPLATE/bug_report.yml": {
+      "filePath": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "contentHash": "088c8bcab80bc1be2817ff4c6f37ad6c35b5b7b9fe69e126e12d7f83b31e4152",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 87,
+      "hasStructuralAnalysis": true
+    },
+    ".github/ISSUE_TEMPLATE/config.yml": {
+      "filePath": ".github/ISSUE_TEMPLATE/config.yml",
+      "contentHash": "e2411bee79aebf37248727b78607217e5bbbae39f7826baa99a484011469a798",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    ".github/ISSUE_TEMPLATE/feature_request.yml": {
+      "filePath": ".github/ISSUE_TEMPLATE/feature_request.yml",
+      "contentHash": "7b520e560d52a5d2fcf249b21b559061e8e9b01dba882ed86826fdb2cb52d80a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    ".github/ISSUE_TEMPLATE/question.yml": {
+      "filePath": ".github/ISSUE_TEMPLATE/question.yml",
+      "contentHash": "59644445aa386b9383ea0a5d05127b2bc8b3da5cf4dc0875d358ca6303a0753b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    ".python-version": {
+      "filePath": ".python-version",
+      "contentHash": "a90b1125cee77c2f544b9367fcddabbc1fa7afbfa1806e13f925033f292d9780",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "CODE_OF_CONDUCT.md": {
+      "filePath": "CODE_OF_CONDUCT.md",
+      "contentHash": "a4f182b5f32347fd0e3e11420bf86c6c1c11f4ae297f52fccecc14eab2c61b64",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 135,
+      "hasStructuralAnalysis": true
+    },
+    "CONTRIBUTING.md": {
+      "filePath": "CONTRIBUTING.md",
+      "contentHash": "dfa41c56e5700ce90cd331e49431def40e7340191e32f98aac942f377317ba87",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 91,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "cf56b6593cec9493dac000f675e64b51c1970b784cac13ca83ea60b95dff7044",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 975,
+      "hasStructuralAnalysis": true
+    },
+    "data/results/online_retail_ii_production_metrics.csv": {
+      "filePath": "data/results/online_retail_ii_production_metrics.csv",
+      "contentHash": "4f7295d884d7ef47ea5477da7e340ff80b7dce82a4fb339416a1cf4628b7c4e5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/online_retail_ii_v2_v4_compare.csv": {
+      "filePath": "data/results/online_retail_ii_v2_v4_compare.csv",
+      "contentHash": "9b999f82d9a49c1bce7a123275ec6c5454249721aa5b3998aebb256f6ab18fae",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/online_retail_ii_v2_vs_v3.csv": {
+      "filePath": "data/results/online_retail_ii_v2_vs_v3.csv",
+      "contentHash": "70655c64ee161ecb588c5c6f12323c35a2bf73e9e8d07aedfc4a7263cfe847d6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/online_retail_ii_v3_accuracy.csv": {
+      "filePath": "data/results/online_retail_ii_v3_accuracy.csv",
+      "contentHash": "9b2fa14a5c07a602f2b555ce6691aa4e86bad7bd9413760baa229418f8d67c24",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/online_retail_ii_v3_inventory.csv": {
+      "filePath": "data/results/online_retail_ii_v3_inventory.csv",
+      "contentHash": "ac8ab4b3a6c26973f9ae30133393b0ef0e2906b6dfb5006d15de9fb524a86923",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/online_retail_ii_v4_holdout.csv": {
+      "filePath": "data/results/online_retail_ii_v4_holdout.csv",
+      "contentHash": "81a072fabf212f5d19dd59105548e5cd9133754879f049ef86649b8e607160bb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/online_retail_ii_v4_multiwindow.csv": {
+      "filePath": "data/results/online_retail_ii_v4_multiwindow.csv",
+      "contentHash": "526c179cf3a9e054b6d8110da6708a03581faebc4f3785bbb7eb04a6cddf62f3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/superstore_production_metrics.csv": {
+      "filePath": "data/results/superstore_production_metrics.csv",
+      "contentHash": "9047390abb5b8d7a7f3af64a6cd8f693f19e8fbb5d83a8cb53e1e701791c55e5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/superstore_v1_v2_v4_compare.csv": {
+      "filePath": "data/results/superstore_v1_v2_v4_compare.csv",
+      "contentHash": "60a8520e2871f32a2a7190b60847c3678a4ef42c031d7477088d680920d091a8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/superstore_v2_vs_v3.csv": {
+      "filePath": "data/results/superstore_v2_vs_v3.csv",
+      "contentHash": "c2740b22a83501cb3f130f2d16ad36ff1124ee9ec19c6b80f6d60a678e382bd7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/superstore_v3_accuracy.csv": {
+      "filePath": "data/results/superstore_v3_accuracy.csv",
+      "contentHash": "38073df1b70d03783d4838bc4775b966bb62758810d124b9617e1f71fef45ab5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/superstore_v3_inventory.csv": {
+      "filePath": "data/results/superstore_v3_inventory.csv",
+      "contentHash": "cd1e818f1739dd925d90815efb50ba0d0d4bc059fb18bccdb65197ca64ed3d39",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/superstore_v4_holdout.csv": {
+      "filePath": "data/results/superstore_v4_holdout.csv",
+      "contentHash": "88986ccc6177f687f7b4c5bda821f24687182ae49babb137c1a42d7484121d89",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": false
+    },
+    "data/results/superstore_v4_multiwindow.csv": {
+      "filePath": "data/results/superstore_v4_multiwindow.csv",
+      "contentHash": "ae17755fd48a30ba0a48c51990014aa092a76ed78e918bce80349e35693813bb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": false
+    },
+    "demand_forecast/__init__.py": {
+      "filePath": "demand_forecast/__init__.py",
+      "contentHash": "d67a4d3ae66ab38a8274bde9e60e49f2bb1c6ddff28f523229dc8d683622288b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "demand_forecast.bakeoff",
+          "specifiers": [
+            "ProductionBakeoffResult",
+            "run_production_bakeoff"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics",
+            "metrics_table"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/accuracy_push/__init__.py": {
+      "filePath": "demand_forecast/accuracy_push/__init__.py",
+      "contentHash": "2e84bfba15bdd1cc534c2d5edc96c194a1b4648aed23dc383f0f89405615204a",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "demand_forecast.accuracy_push.pipeline",
+          "specifiers": [
+            "AccuracyPushResult",
+            "run_accuracy_push"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/accuracy_push/hierarchy_safe.py": {
+      "filePath": "demand_forecast/accuracy_push/hierarchy_safe.py",
+      "contentHash": "9addf13f0c18f15260de64ead58e4f8ce35c362c6723bc4d39949d6bf0d59311",
+      "functions": [
+        {
+          "name": "_hw",
+          "params": [
+            "s",
+            "h",
+            "period",
+            "seasonal"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "bottom_up_total",
+          "params": [
+            "transactions",
+            "date_col",
+            "qty_col",
+            "group_cols",
+            "train_index",
+            "h",
+            "period",
+            "min_total_qty"
+          ],
+          "returnType": "BottomUpResult",
+          "exported": true,
+          "lineCount": 69
+        },
+        {
+          "name": "volume_scale",
+          "params": [
+            "point",
+            "reference"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "blend",
+          "params": [
+            "a",
+            "b",
+            "alpha"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "BottomUpResult",
+          "methods": [],
+          "properties": [
+            "name",
+            "point",
+            "group_keys",
+            "details"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        }
+      ],
+      "exports": [
+        "BottomUpResult",
+        "_hw",
+        "bottom_up_total",
+        "volume_scale",
+        "blend"
+      ],
+      "totalLines": 126,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/accuracy_push/pipeline.py": {
+      "filePath": "demand_forecast/accuracy_push/pipeline.py",
+      "contentHash": "790b86a4cffb31970d49d32e6417ed7a004f33c1a341a97e4002455427d2f004",
+      "functions": [
+        {
+          "name": "_hw_mul",
+          "params": [
+            "train",
+            "h",
+            "period"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_sigma_pi",
+          "params": [
+            "train",
+            "point",
+            "period"
+          ],
+          "returnType": "tuple[np.ndarray, np.ndarray]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_origin_splits",
+          "params": [
+            "y",
+            "h",
+            "n_origins",
+            "min_train"
+          ],
+          "returnType": "list[tuple[pd.Series, pd.Series]]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "run_accuracy_push",
+          "params": [
+            "y",
+            "transactions",
+            "dataset",
+            "date_col",
+            "qty_col",
+            "hierarchy_specs",
+            "promo_col",
+            "country",
+            "h",
+            "n_origins",
+            "seed"
+          ],
+          "returnType": "AccuracyPushResult",
+          "exported": true,
+          "lineCount": 240
+        }
+      ],
+      "classes": [
+        {
+          "name": "AccuracyPushResult",
+          "methods": [],
+          "properties": [
+            "dataset",
+            "h",
+            "y_train",
+            "y_test",
+            "leaderboard",
+            "multiwindow_scores",
+            "champion_name",
+            "champion_point",
+            "champion_lower",
+            "champion_upper",
+            "order_qty_sl90",
+            "notes",
+            "forecasts"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Callable"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        },
+        {
+          "source": "demand_forecast.accuracy_push.hierarchy_safe",
+          "specifiers": [
+            "blend",
+            "bottom_up_total",
+            "volume_scale"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.features",
+          "specifiers": [
+            "aggregate_promo_proxy",
+            "build_calendar_frame"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.inventory",
+          "specifiers": [
+            "asymmetric_cost",
+            "quantile_order_quantity"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics",
+            "metrics_table"
+          ]
+        },
+        {
+          "source": "demand_forecast.timesfm_runner",
+          "specifiers": [
+            "forecast_timesfm"
+          ]
+        }
+      ],
+      "exports": [
+        "AccuracyPushResult",
+        "_hw_mul",
+        "_sigma_pi",
+        "_origin_splits",
+        "run_accuracy_push"
+      ],
+      "totalLines": 322,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/advanced/__init__.py": {
+      "filePath": "demand_forecast/advanced/__init__.py",
+      "contentHash": "ec24cc30e63cf765ffd56b79d12bb7cf7bc712f0a188bf657e9ca1a047af1b04",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "demand_forecast.advanced.pipeline",
+          "specifiers": [
+            "AdvancedRunResult",
+            "run_advanced_pipeline"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/advanced/ensemble.py": {
+      "filePath": "demand_forecast/advanced/ensemble.py",
+      "contentHash": "cdaa5d0707ff238e0032a8b68fea01c390620855eecd5dc577c26d00d6757d2a",
+      "functions": [
+        {
+          "name": "inverse_error_weights",
+          "params": [
+            "errors",
+            "eps"
+          ],
+          "returnType": "dict[str, float]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "blend_points",
+          "params": [
+            "points",
+            "weights"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "smart_stack_weights",
+          "params": [
+            "val_mae",
+            "max_models"
+          ],
+          "returnType": "dict[str, float]",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        }
+      ],
+      "exports": [
+        "inverse_error_weights",
+        "blend_points",
+        "smart_stack_weights"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/advanced/evaluation.py": {
+      "filePath": "demand_forecast/advanced/evaluation.py",
+      "contentHash": "50a874763ec6cace8e5153d3581b3a52372e6d433716f2568803b374a1ca49b0",
+      "functions": [
+        {
+          "name": "rolling_origin_evaluate",
+          "params": [
+            "y",
+            "forecast_fn",
+            "h",
+            "n_origins",
+            "min_train",
+            "mase_period",
+            "underage_cost",
+            "overage_cost"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "summarize_rolling",
+          "params": [
+            "df"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Callable"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.inventory",
+          "specifiers": [
+            "asymmetric_cost"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics"
+          ]
+        }
+      ],
+      "exports": [
+        "rolling_origin_evaluate",
+        "summarize_rolling"
+      ],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/advanced/features.py": {
+      "filePath": "demand_forecast/advanced/features.py",
+      "contentHash": "6af03abac827056cee7a06c087d6cc4cf867c9de9a929479064e221feb291986",
+      "functions": [
+        {
+          "name": "week_index",
+          "params": [
+            "start",
+            "end",
+            "freq"
+          ],
+          "returnType": "pd.DatetimeIndex",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "holiday_count_in_week",
+          "params": [
+            "week_ends",
+            "country"
+          ],
+          "returnType": "pd.Series",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "build_calendar_frame",
+          "params": [
+            "index",
+            "country",
+            "include_fourier"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "aggregate_promo_proxy",
+          "params": [
+            "transactions",
+            "date_col",
+            "value_col",
+            "freq"
+          ],
+          "returnType": "pd.Series",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "make_future_exog",
+          "params": [
+            "history_exog",
+            "h",
+            "country"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 21
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Iterable"
+          ]
+        },
+        {
+          "source": "holidays",
+          "specifiers": [
+            "holidays_lib"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        }
+      ],
+      "exports": [
+        "week_index",
+        "holiday_count_in_week",
+        "build_calendar_frame",
+        "aggregate_promo_proxy",
+        "make_future_exog"
+      ],
+      "totalLines": 114,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/advanced/hierarchy.py": {
+      "filePath": "demand_forecast/advanced/hierarchy.py",
+      "contentHash": "1340ad616b56858bb267d5f4a9dd1971d619b1d8146e31d580d08e237ee0d760",
+      "functions": [
+        {
+          "name": "_pick_period",
+          "params": [
+            "n"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "forecast_bottom_series",
+          "params": [
+            "series",
+            "h",
+            "seasonal"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "build_bottom_panel",
+          "params": [
+            "transactions",
+            "date_col",
+            "qty_col",
+            "group_cols",
+            "freq",
+            "min_total_qty"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "bottom_up_forecast",
+          "params": [
+            "panel",
+            "h",
+            "seasonal",
+            "top_k"
+          ],
+          "returnType": "HierarchyResult",
+          "exported": true,
+          "lineCount": 45
+        }
+      ],
+      "classes": [
+        {
+          "name": "HierarchyResult",
+          "methods": [],
+          "properties": [
+            "bottom_forecasts",
+            "total_bottom_up",
+            "series_used",
+            "notes"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        }
+      ],
+      "exports": [
+        "HierarchyResult",
+        "_pick_period",
+        "forecast_bottom_series",
+        "build_bottom_panel",
+        "bottom_up_forecast"
+      ],
+      "totalLines": 156,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/advanced/inventory.py": {
+      "filePath": "demand_forecast/advanced/inventory.py",
+      "contentHash": "bdb4b48dad6bcc14b142eb52db3b4ce628e25be2444623c0db0e4af487261b70",
+      "functions": [
+        {
+          "name": "asymmetric_cost",
+          "params": [
+            "y_true",
+            "y_pred",
+            "underage_cost",
+            "overage_cost"
+          ],
+          "returnType": "InventoryScore",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "quantile_order_quantity",
+          "params": [
+            "point",
+            "lower",
+            "upper",
+            "service_level"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "safety_buffer_from_band",
+          "params": [
+            "point",
+            "upper"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [
+        {
+          "name": "InventoryScore",
+          "methods": [],
+          "properties": [
+            "under_units",
+            "over_units",
+            "asymmetric_cost",
+            "service_level_hit_rate",
+            "pinball_loss"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        }
+      ],
+      "exports": [
+        "InventoryScore",
+        "asymmetric_cost",
+        "quantile_order_quantity",
+        "safety_buffer_from_band"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/advanced/models_exog.py": {
+      "filePath": "demand_forecast/advanced/models_exog.py",
+      "contentHash": "8e5be89cdb47d9c94c46c0c4a6adf9a71bf3f0c0aff838f06ae636a2c00f4b1d",
+      "functions": [
+        {
+          "name": "_pi",
+          "params": [
+            "point",
+            "sigma",
+            "z"
+          ],
+          "returnType": "tuple[np.ndarray, np.ndarray]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_sigma_from_resid",
+          "params": [
+            "resid"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "forecast_hw_log",
+          "params": [
+            "y",
+            "h",
+            "period",
+            "seasonal"
+          ],
+          "returnType": "AdvForecast",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "forecast_hw_mul",
+          "params": [
+            "y",
+            "h",
+            "period"
+          ],
+          "returnType": "AdvForecast",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "forecast_sarimax_exog",
+          "params": [
+            "y",
+            "exog",
+            "h",
+            "order",
+            "seasonal_order",
+            "country"
+          ],
+          "returnType": "AdvForecast",
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "forecast_ml_lags",
+          "params": [
+            "y",
+            "exog",
+            "h",
+            "lags",
+            "seed"
+          ],
+          "returnType": "AdvForecast",
+          "exported": true,
+          "lineCount": 67
+        },
+        {
+          "name": "forecast_seasonal_naive",
+          "params": [
+            "y",
+            "h",
+            "period"
+          ],
+          "returnType": "AdvForecast",
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdvForecast",
+          "methods": [],
+          "properties": [
+            "name",
+            "point",
+            "lower",
+            "upper",
+            "details",
+            "quantiles",
+            "extras"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "scipy",
+          "specifiers": [
+            "stats"
+          ]
+        },
+        {
+          "source": "sklearn.ensemble",
+          "specifiers": [
+            "HistGradientBoostingRegressor"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.statespace.sarimax",
+          "specifiers": [
+            "SARIMAX"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.features",
+          "specifiers": [
+            "make_future_exog"
+          ]
+        }
+      ],
+      "exports": [
+        "AdvForecast",
+        "_pi",
+        "_sigma_from_resid",
+        "forecast_hw_log",
+        "forecast_hw_mul",
+        "forecast_sarimax_exog",
+        "forecast_ml_lags",
+        "forecast_seasonal_naive"
+      ],
+      "totalLines": 229,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/advanced/pipeline.py": {
+      "filePath": "demand_forecast/advanced/pipeline.py",
+      "contentHash": "3ef51f7d2c6d0c815ae9468ad5749592fbffcb6291e2ec45407958314c1e6d7b",
+      "functions": [
+        {
+          "name": "_best_period",
+          "params": [
+            "n"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_select_period_by_val",
+          "params": [
+            "y_train",
+            "h"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_mase_p",
+          "params": [
+            "n"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "run_advanced_pipeline",
+          "params": [
+            "y_total",
+            "dataset",
+            "transactions",
+            "date_col",
+            "qty_col",
+            "hierarchy_cols",
+            "promo_series",
+            "country",
+            "h",
+            "n_rolling",
+            "underage_cost",
+            "overage_cost",
+            "seed"
+          ],
+          "returnType": "AdvancedRunResult",
+          "exported": true,
+          "lineCount": 291
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdvancedRunResult",
+          "methods": [],
+          "properties": [
+            "dataset",
+            "grain",
+            "h",
+            "y_train",
+            "y_test",
+            "leaderboard",
+            "inventory_table",
+            "champion_name",
+            "champion_point",
+            "champion_lower",
+            "champion_upper",
+            "order_qty_sl90",
+            "safety_buffer",
+            "hierarchy_total",
+            "rolling_summary",
+            "notes",
+            "forecasts"
+          ],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.ensemble",
+          "specifiers": [
+            "blend_points",
+            "smart_stack_weights"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.evaluation",
+          "specifiers": [
+            "rolling_origin_evaluate",
+            "summarize_rolling"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.features",
+          "specifiers": [
+            "build_calendar_frame"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.hierarchy",
+          "specifiers": [
+            "bottom_up_forecast",
+            "build_bottom_panel"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.inventory",
+          "specifiers": [
+            "asymmetric_cost",
+            "quantile_order_quantity",
+            "safety_buffer_from_band"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.models_exog",
+          "specifiers": [
+            "AdvForecast",
+            "forecast_hw_log",
+            "forecast_hw_mul",
+            "forecast_ml_lags",
+            "forecast_sarimax_exog",
+            "forecast_seasonal_naive"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics",
+            "metrics_table"
+          ]
+        },
+        {
+          "source": "demand_forecast.timesfm_runner",
+          "specifiers": [
+            "forecast_timesfm"
+          ]
+        }
+      ],
+      "exports": [
+        "AdvancedRunResult",
+        "_best_period",
+        "_select_period_by_val",
+        "_mase_p",
+        "run_advanced_pipeline"
+      ],
+      "totalLines": 376,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/bakeoff.py": {
+      "filePath": "demand_forecast/bakeoff.py",
+      "contentHash": "be1e34c2b59e391b0744acbe507111a9d6fb4b6d50f1d16f0b99c5a10049c53e",
+      "functions": [
+        {
+          "name": "_align_fc",
+          "params": [
+            "point",
+            "lower",
+            "upper",
+            "index"
+          ],
+          "returnType": "tuple[pd.Series, pd.Series, pd.Series]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_val_select_weights",
+          "params": [
+            "y_train",
+            "h",
+            "grain",
+            "include_timesfm",
+            "seed"
+          ],
+          "returnType": "tuple[dict[str, float], dict[str, np.ndarray], list[str]]",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "run_production_bakeoff",
+          "params": [
+            "y",
+            "grain",
+            "h",
+            "seed",
+            "n_rolling_origins",
+            "include_timesfm"
+          ],
+          "returnType": "ProductionBakeoffResult",
+          "exported": true,
+          "lineCount": 184
+        }
+      ],
+      "classes": [
+        {
+          "name": "CandidateResult",
+          "methods": [],
+          "properties": [
+            "name",
+            "kind",
+            "point",
+            "lower",
+            "upper",
+            "val_mae",
+            "test_metrics",
+            "details",
+            "residuals",
+            "coverage"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "ProductionBakeoffResult",
+          "methods": [],
+          "properties": [
+            "grain",
+            "h",
+            "mase_period",
+            "y_train",
+            "y_test",
+            "candidates",
+            "champion",
+            "leaderboard",
+            "rolling",
+            "notes"
+          ],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "demand_forecast.classical",
+          "specifiers": [
+            "ClassicalForecast",
+            "build_classical_candidates",
+            "mase_period_for_series"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics",
+            "metrics_table",
+            "pi_coverage"
+          ]
+        },
+        {
+          "source": "demand_forecast.timesfm_runner",
+          "specifiers": [
+            "TimesFMForecast",
+            "forecast_timesfm"
+          ]
+        }
+      ],
+      "exports": [
+        "CandidateResult",
+        "ProductionBakeoffResult",
+        "_align_fc",
+        "_val_select_weights",
+        "run_production_bakeoff"
+      ],
+      "totalLines": 272,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/classical.py": {
+      "filePath": "demand_forecast/classical.py",
+      "contentHash": "a9e8f1257bd413e21145b5e7eb3db938f3c0701a6ec73626eb643ab5492d7546",
+      "functions": [
+        {
+          "name": "seasonal_periods_for_series",
+          "params": [
+            "n",
+            "grain"
+          ],
+          "returnType": "list[int]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "mase_period_for_series",
+          "params": [
+            "n",
+            "grain"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_residual_sigma",
+          "params": [
+            "resid"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_pi",
+          "params": [
+            "point",
+            "sigma",
+            "z"
+          ],
+          "returnType": "tuple[np.ndarray, np.ndarray]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "forecast_seasonal_naive",
+          "params": [
+            "train",
+            "h",
+            "period"
+          ],
+          "returnType": "ClassicalForecast",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "forecast_holt_winters",
+          "params": [
+            "train",
+            "h",
+            "seasonal",
+            "period"
+          ],
+          "returnType": "ClassicalForecast",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "forecast_auto_arima",
+          "params": [
+            "train",
+            "h",
+            "seasonal_period",
+            "seed"
+          ],
+          "returnType": "ClassicalForecast",
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "build_classical_candidates",
+          "params": [
+            "train",
+            "h",
+            "grain",
+            "seed"
+          ],
+          "returnType": "list[ClassicalForecast]",
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "classes": [
+        {
+          "name": "ClassicalForecast",
+          "methods": [],
+          "properties": [
+            "name",
+            "point",
+            "lower",
+            "upper",
+            "residuals",
+            "fitted_model",
+            "details"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "scipy",
+          "specifiers": [
+            "stats"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        }
+      ],
+      "exports": [
+        "ClassicalForecast",
+        "seasonal_periods_for_series",
+        "mase_period_for_series",
+        "_residual_sigma",
+        "_pi",
+        "forecast_seasonal_naive",
+        "forecast_holt_winters",
+        "forecast_auto_arima",
+        "build_classical_candidates"
+      ],
+      "totalLines": 213,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/metrics.py": {
+      "filePath": "demand_forecast/metrics.py",
+      "contentHash": "e291d92d05b8a6a340372429c710dc5761363e72d0797a513d3523129fd66b22",
+      "functions": [
+        {
+          "name": "forecast_metrics",
+          "params": [
+            "y_true",
+            "y_pred",
+            "y_train",
+            "mase_period"
+          ],
+          "returnType": "dict[str, float]",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "metrics_table",
+          "params": [
+            "rows"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "pi_coverage",
+          "params": [
+            "y_true",
+            "lower",
+            "upper"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "summarize_backtest",
+          "params": [
+            "fold_metrics"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        }
+      ],
+      "exports": [
+        "forecast_metrics",
+        "metrics_table",
+        "pi_coverage",
+        "summarize_backtest"
+      ],
+      "totalLines": 78,
+      "hasStructuralAnalysis": true
+    },
+    "demand_forecast/timesfm_runner.py": {
+      "filePath": "demand_forecast/timesfm_runner.py",
+      "contentHash": "5ea218d94769f9b7d369d22ea3127f32368454b6d20a413a340db285dcbfcf11",
+      "functions": [
+        {
+          "name": "get_timesfm_model",
+          "params": [],
+          "returnType": "timesfm.TimesFM_2p5_200M_torch",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "forecast_timesfm",
+          "params": [
+            "train",
+            "h",
+            "max_context"
+          ],
+          "returnType": "TimesFMForecast",
+          "exported": true,
+          "lineCount": 38
+        }
+      ],
+      "classes": [
+        {
+          "name": "TimesFMForecast",
+          "methods": [],
+          "properties": [
+            "name",
+            "point",
+            "lower",
+            "upper",
+            "quantiles",
+            "details"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "timesfm",
+          "specifiers": [
+            "timesfm"
+          ]
+        },
+        {
+          "source": "torch",
+          "specifiers": [
+            "torch"
+          ]
+        }
+      ],
+      "exports": [
+        "TimesFMForecast",
+        "get_timesfm_model",
+        "forecast_timesfm"
+      ],
+      "totalLines": 74,
+      "hasStructuralAnalysis": true
+    },
+    "main.py": {
+      "filePath": "main.py",
+      "contentHash": "3cfa1d234ef32baa7b6254d486f2f939afbc213e759da296f6c4eb8873fbfe46",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "main"
+      ],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "notebooks/01_superstore_demand_forecast.ipynb": {
+      "filePath": "notebooks/01_superstore_demand_forecast.ipynb",
+      "contentHash": "f166ab836a075f0287189850fc7bf511ec8617fed40c2ea47fb78e61bcd1e44b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2847,
+      "hasStructuralAnalysis": false
+    },
+    "notebooks/01_superstore_demand_forecast.py": {
+      "filePath": "notebooks/01_superstore_demand_forecast.py",
+      "contentHash": "da6f82bba6fe40c386d9b92f874fdd8604fccc87b548b59ee76775fd2f378683",
+      "functions": [
+        {
+          "name": "show_plot",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "load_superstore",
+          "params": [],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "series_profile",
+          "params": [
+            "s",
+            "name"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "forecast_metrics",
+          "params": [
+            "y_true",
+            "y_pred",
+            "y_train_arr",
+            "m"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "warnings",
+          "specifiers": [
+            "warnings"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "seaborn",
+          "specifiers": [
+            "sns"
+          ]
+        },
+        {
+          "source": "statsmodels.api",
+          "specifiers": [
+            "sm"
+          ]
+        },
+        {
+          "source": "torch",
+          "specifiers": [
+            "torch"
+          ]
+        },
+        {
+          "source": "matplotlib",
+          "specifiers": [
+            "matplotlib"
+          ]
+        },
+        {
+          "source": "matplotlib.pyplot",
+          "specifiers": [
+            "plt"
+          ]
+        },
+        {
+          "source": "pmdarima",
+          "specifiers": [
+            "auto_arima"
+          ]
+        },
+        {
+          "source": "scipy",
+          "specifiers": [
+            "stats"
+          ]
+        },
+        {
+          "source": "statsmodels.graphics.tsaplots",
+          "specifiers": [
+            "plot_acf",
+            "plot_pacf"
+          ]
+        },
+        {
+          "source": "statsmodels.stats.diagnostic",
+          "specifiers": [
+            "acorr_ljungbox"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.stattools",
+          "specifiers": [
+            "adfuller"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.seasonal",
+          "specifiers": [
+            "STL"
+          ]
+        },
+        {
+          "source": "pycaret",
+          "specifiers": [
+            "pycaret"
+          ]
+        },
+        {
+          "source": "timesfm",
+          "specifiers": [
+            "timesfm"
+          ]
+        },
+        {
+          "source": "pycaret.time_series",
+          "specifiers": [
+            "TimeSeriesExperiment"
+          ]
+        },
+        {
+          "source": "demand_forecast",
+          "specifiers": [
+            "run_production_bakeoff"
+          ]
+        },
+        {
+          "source": "statsmodels.stats.diagnostic",
+          "specifiers": [
+            "acorr_ljungbox"
+          ]
+        },
+        {
+          "source": "statsmodels.graphics.tsaplots",
+          "specifiers": [
+            "plot_acf",
+            "plot_pacf"
+          ]
+        },
+        {
+          "source": "scipy",
+          "specifiers": [
+            "scipy_stats"
+          ]
+        }
+      ],
+      "exports": [
+        "show_plot",
+        "load_superstore",
+        "series_profile",
+        "forecast_metrics"
+      ],
+      "totalLines": 688,
+      "hasStructuralAnalysis": true
+    },
+    "notebooks/02_online_retail_ii_demand_forecast.ipynb": {
+      "filePath": "notebooks/02_online_retail_ii_demand_forecast.ipynb",
+      "contentHash": "b81100df00a3a20577a9bebf28345bf501978beb2a5536c37a11be1780c0f595",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2526,
+      "hasStructuralAnalysis": false
+    },
+    "notebooks/02_online_retail_ii_demand_forecast.py": {
+      "filePath": "notebooks/02_online_retail_ii_demand_forecast.py",
+      "contentHash": "53125bd00b94e5228a6792f1e0dbcde38aaffab99a5d05d22da5f3f041c5abee",
+      "functions": [
+        {
+          "name": "show_plot",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "series_profile",
+          "params": [
+            "s",
+            "name"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "forecast_metrics",
+          "params": [
+            "y_true",
+            "y_pred",
+            "y_train_arr",
+            "m"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "warnings",
+          "specifiers": [
+            "warnings"
+          ]
+        },
+        {
+          "source": "zipfile",
+          "specifiers": [
+            "zipfile"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        },
+        {
+          "source": "seaborn",
+          "specifiers": [
+            "sns"
+          ]
+        },
+        {
+          "source": "torch",
+          "specifiers": [
+            "torch"
+          ]
+        },
+        {
+          "source": "matplotlib",
+          "specifiers": [
+            "matplotlib"
+          ]
+        },
+        {
+          "source": "matplotlib.pyplot",
+          "specifiers": [
+            "plt"
+          ]
+        },
+        {
+          "source": "pmdarima",
+          "specifiers": [
+            "auto_arima"
+          ]
+        },
+        {
+          "source": "scipy",
+          "specifiers": [
+            "stats"
+          ]
+        },
+        {
+          "source": "statsmodels.graphics.tsaplots",
+          "specifiers": [
+            "plot_acf",
+            "plot_pacf"
+          ]
+        },
+        {
+          "source": "statsmodels.stats.diagnostic",
+          "specifiers": [
+            "acorr_ljungbox"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.seasonal",
+          "specifiers": [
+            "STL"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.stattools",
+          "specifiers": [
+            "adfuller"
+          ]
+        },
+        {
+          "source": "pycaret",
+          "specifiers": [
+            "pycaret"
+          ]
+        },
+        {
+          "source": "timesfm",
+          "specifiers": [
+            "timesfm"
+          ]
+        },
+        {
+          "source": "pycaret.time_series",
+          "specifiers": [
+            "TimeSeriesExperiment"
+          ]
+        },
+        {
+          "source": "demand_forecast",
+          "specifiers": [
+            "run_production_bakeoff"
+          ]
+        },
+        {
+          "source": "statsmodels.stats.diagnostic",
+          "specifiers": [
+            "acorr_ljungbox"
+          ]
+        },
+        {
+          "source": "statsmodels.graphics.tsaplots",
+          "specifiers": [
+            "plot_acf",
+            "plot_pacf"
+          ]
+        }
+      ],
+      "exports": [
+        "show_plot",
+        "series_profile",
+        "forecast_metrics"
+      ],
+      "totalLines": 652,
+      "hasStructuralAnalysis": true
+    },
+    "notebooks/03_superstore_advanced_demand_forecast.py": {
+      "filePath": "notebooks/03_superstore_advanced_demand_forecast.py",
+      "contentHash": "c723dd935361078571385453ced689afcf489b9937c4aabf0e6d0fc0562bd49d",
+      "functions": [
+        {
+          "name": "show_plot",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "warnings",
+          "specifiers": [
+            "warnings"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "matplotlib",
+          "specifiers": [
+            "matplotlib"
+          ]
+        },
+        {
+          "source": "matplotlib.pyplot",
+          "specifiers": [
+            "plt"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "seaborn",
+          "specifiers": [
+            "sns"
+          ]
+        },
+        {
+          "source": "torch",
+          "specifiers": [
+            "torch"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced",
+          "specifiers": [
+            "run_advanced_pipeline"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.evaluation",
+          "specifiers": [
+            "summarize_rolling"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.features",
+          "specifiers": [
+            "aggregate_promo_proxy"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.models_exog",
+          "specifiers": [
+            "forecast_hw_mul"
+          ]
+        }
+      ],
+      "exports": [
+        "show_plot"
+      ],
+      "totalLines": 307,
+      "hasStructuralAnalysis": true
+    },
+    "notebooks/04_online_retail_ii_advanced_demand_forecast.py": {
+      "filePath": "notebooks/04_online_retail_ii_advanced_demand_forecast.py",
+      "contentHash": "178e72f6c1d5fd9685ddffc73e00bae12dd919f886eac936cabfddeaffbc7519",
+      "functions": [
+        {
+          "name": "show_plot",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "warnings",
+          "specifiers": [
+            "warnings"
+          ]
+        },
+        {
+          "source": "zipfile",
+          "specifiers": [
+            "zipfile"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "matplotlib",
+          "specifiers": [
+            "matplotlib"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "seaborn",
+          "specifiers": [
+            "sns"
+          ]
+        },
+        {
+          "source": "torch",
+          "specifiers": [
+            "torch"
+          ]
+        },
+        {
+          "source": "matplotlib.pyplot",
+          "specifiers": [
+            "plt"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced",
+          "specifiers": [
+            "run_advanced_pipeline"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.evaluation",
+          "specifiers": [
+            "summarize_rolling"
+          ]
+        },
+        {
+          "source": "demand_forecast.advanced.models_exog",
+          "specifiers": [
+            "forecast_hw_mul"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics"
+          ]
+        }
+      ],
+      "exports": [
+        "show_plot"
+      ],
+      "totalLines": 240,
+      "hasStructuralAnalysis": true
+    },
+    "notebooks/05_superstore_accuracy_push.py": {
+      "filePath": "notebooks/05_superstore_accuracy_push.py",
+      "contentHash": "d9b8369100a0ebd05758edc6b1552d0fa0d267dbf5fbefc9534f41a41f697e84",
+      "functions": [
+        {
+          "name": "show_plot",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "warnings",
+          "specifiers": [
+            "warnings"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "matplotlib",
+          "specifiers": [
+            "matplotlib"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "seaborn",
+          "specifiers": [
+            "sns"
+          ]
+        },
+        {
+          "source": "torch",
+          "specifiers": [
+            "torch"
+          ]
+        },
+        {
+          "source": "matplotlib.pyplot",
+          "specifiers": [
+            "plt"
+          ]
+        },
+        {
+          "source": "demand_forecast.accuracy_push",
+          "specifiers": [
+            "run_accuracy_push"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        }
+      ],
+      "exports": [
+        "show_plot"
+      ],
+      "totalLines": 251,
+      "hasStructuralAnalysis": true
+    },
+    "notebooks/06_online_retail_ii_accuracy_push.py": {
+      "filePath": "notebooks/06_online_retail_ii_accuracy_push.py",
+      "contentHash": "3f9dff7c26612c0175c86cb186a12f410c9c8057984fd0b7cb968af2ff8b1063",
+      "functions": [
+        {
+          "name": "show_plot",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "warnings",
+          "specifiers": [
+            "warnings"
+          ]
+        },
+        {
+          "source": "zipfile",
+          "specifiers": [
+            "zipfile"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "matplotlib",
+          "specifiers": [
+            "matplotlib"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "seaborn",
+          "specifiers": [
+            "sns"
+          ]
+        },
+        {
+          "source": "torch",
+          "specifiers": [
+            "torch"
+          ]
+        },
+        {
+          "source": "matplotlib.pyplot",
+          "specifiers": [
+            "plt"
+          ]
+        },
+        {
+          "source": "demand_forecast.accuracy_push",
+          "specifiers": [
+            "run_accuracy_push"
+          ]
+        },
+        {
+          "source": "demand_forecast.metrics",
+          "specifiers": [
+            "forecast_metrics"
+          ]
+        },
+        {
+          "source": "statsmodels.tsa.holtwinters",
+          "specifiers": [
+            "ExponentialSmoothing"
+          ]
+        }
+      ],
+      "exports": [
+        "show_plot"
+      ],
+      "totalLines": 222,
+      "hasStructuralAnalysis": true
+    },
+    "pyproject.toml": {
+      "filePath": "pyproject.toml",
+      "contentHash": "1ba9072797f51c3792f8d74d55d13a0d9bfd324f7b438d4d1ec2b204f6ce3b7b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/check_system.py": {
+      "filePath": "scripts/check_system.py",
+      "contentHash": "d762592d515eb5ba02ff31d39e23e2ce52274e7b19dc077f524969c0928696f4",
+      "functions": [
+        {
+          "name": "_get_total_ram_gb",
+          "params": [],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "_get_available_ram_gb",
+          "params": [],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "check_ram",
+          "params": [
+            "profile"
+          ],
+          "returnType": "CheckResult",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "check_gpu",
+          "params": [],
+          "returnType": "CheckResult",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "check_disk",
+          "params": [
+            "profile"
+          ],
+          "returnType": "CheckResult",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "check_python",
+          "params": [],
+          "returnType": "CheckResult",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "check_package",
+          "params": [
+            "pkg_name",
+            "import_name"
+          ],
+          "returnType": "CheckResult",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "recommend_batch_size",
+          "params": [
+            "report"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "estimate_memory_gb",
+          "params": [
+            "num_series",
+            "context_length",
+            "horizon",
+            "batch_size",
+            "model_version"
+          ],
+          "returnType": "dict[str, float]",
+          "exported": true,
+          "lineCount": 51
+        },
+        {
+          "name": "check_dataset_fit",
+          "params": [
+            "num_series",
+            "context_length",
+            "horizon",
+            "batch_size",
+            "model_version"
+          ],
+          "returnType": "tuple[bool, str, dict[str, float]]",
+          "exported": true,
+          "lineCount": 56
+        },
+        {
+          "name": "print_memory_estimate",
+          "params": [
+            "num_series",
+            "context_length",
+            "horizon",
+            "batch_size",
+            "model_version"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 49
+        },
+        {
+          "name": "run_checks",
+          "params": [
+            "model_version"
+          ],
+          "returnType": "SystemReport",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "print_report",
+          "params": [
+            "report"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 81
+        }
+      ],
+      "classes": [
+        {
+          "name": "CheckResult",
+          "methods": [
+            "icon",
+            "__str__"
+          ],
+          "properties": [
+            "name",
+            "status",
+            "detail",
+            "value"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "SystemReport",
+          "methods": [
+            "passed",
+            "to_dict"
+          ],
+          "properties": [
+            "model",
+            "checks",
+            "verdict",
+            "verdict_detail",
+            "recommended_batch_size",
+            "mode"
+          ],
+          "exported": true,
+          "lineCount": 30
+        }
+      ],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "platform",
+          "specifiers": [
+            "platform"
+          ]
+        },
+        {
+          "source": "shutil",
+          "specifiers": [
+            "shutil"
+          ]
+        },
+        {
+          "source": "struct",
+          "specifiers": [
+            "struct"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        }
+      ],
+      "exports": [
+        "CheckResult",
+        "SystemReport",
+        "_get_total_ram_gb",
+        "_get_available_ram_gb",
+        "check_ram",
+        "check_gpu",
+        "check_disk",
+        "check_python",
+        "check_package",
+        "recommend_batch_size",
+        "estimate_memory_gb",
+        "check_dataset_fit",
+        "print_memory_estimate",
+        "run_checks",
+        "print_report",
+        "main"
+      ],
+      "totalLines": 739,
+      "hasStructuralAnalysis": true
+    }
+  }
+}
