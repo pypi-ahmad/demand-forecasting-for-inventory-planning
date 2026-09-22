@@ -116,6 +116,12 @@ uv run jupytext --to ipynb notebooks/02_online_retail_ii_demand_forecast.py
 | `tests/` | Adapter contract tests that do not download weights |
 | `docs/archive/` | Clearly historical benchmark material |
 
+## Technical documentation
+
+- [Architecture and evaluation model](docs/architecture.md)
+- [Python reference](docs/reference.md)
+- [Operator runbook](docs/runbook.md)
+
 ## Troubleshooting
 
 | Symptom | Action |
