@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in **Demand Forecasting for Inventory Planning**. This repo is a tutorial-style, fully executed forecasting project (PyCaret time-series survey + Google TimesFM 2.5). Contributions that improve correctness, reproducibility, docs, or educational clarity are welcome.
+Thanks for your interest in **Demand Forecasting for Inventory Planning**. This repository is a tutorial-style forecasting project with executed PyCaret time-series surveys and Google TimesFM 2.5 runs. Contributions that improve correctness, reproducibility, documentation, or teaching clarity are welcome.
 
 ## Before you start
 
@@ -87,4 +87,4 @@ Maintainers may ask for smaller diffs or additional evidence from a real run.
 
 ## Questions
 
-Open a **Question** issue (or a blank issue if templates do not fit). For dataset licensing, cite UCI / Superstore / TimesFM terms separately from the MIT code license—see the README.
+Open a **Question** issue, or a blank issue if the templates do not fit. For dataset licensing, cite the UCI, Superstore, and TimesFM terms separately from the MIT code license in the README.
