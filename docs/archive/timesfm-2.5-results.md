@@ -18,8 +18,8 @@ That revision used `google/timesfm-2.5-200m-pytorch` through the older
   captured in the linked revision.
 - They must not be compared directly with TimesFM 3.0 or described as TimesFM
   3.0 performance.
-- The active notebooks are now TimesFM 3.0 sources with cleared outputs. New
-  results require a fresh execution.
+- The active notebooks now contain independently executed TimesFM 3.0 results.
+  They are not directly comparable to these historical numbers.
 
 ## Preserved headline metrics
 

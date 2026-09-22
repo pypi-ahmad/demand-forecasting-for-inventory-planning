@@ -21,8 +21,22 @@ before downloading weights.
 
 The former benchmark results are not TimesFM 3.0 evidence. They are retained
 for audit in [the historical results archive](docs/archive/timesfm-2.5-results.md).
-The active notebooks have intentionally not been re-executed with TimesFM 3.0,
-so this README makes no current accuracy claim for it.
+
+## Verified TimesFM 3.0 run
+
+Both active notebooks were executed end to end on 2026-09-22 with Python
+3.13.13, PyCaret 4.0.0a8, CUDA 13.2 PyTorch, and an RTX 4060 Laptop GPU. The
+generated leaderboards live in `data/results/`; the executed notebooks contain
+the full inputs, figures, and diagnostics.
+
+| Dataset | Holdout champion | Champion MASE | TimesFM 3.0 MASE | TimesFM q10–q90 coverage |
+|---|---|---:|---:|---:|
+| Superstore | Holt-Winters multiplicative, m=52 | 0.803 | 1.067 | 0.875 |
+| Online Retail II | Holt-Winters multiplicative, m=13 | 0.561 | 0.869 | 0.875 |
+
+On these single aggregate series, the selected classical model won the final
+holdout. TimesFM 3.0 produced the best mean rolling-origin MASE on Online
+Retail II (0.498). These are dataset-specific outcomes, not a general ranking.
 
 ## Requirements
 
@@ -71,10 +85,11 @@ also reports interval coverage and inventory-oriented costs.
 ## Notebooks
 
 Jupytext percent sources in `notebooks/*.py` are the canonical notebook
-sources. Their paired `.ipynb` files are synchronized without stale outputs;
-run them yourself to generate TimesFM 3.0 evidence for your data.
+sources. Their paired `.ipynb` files contain the verified TimesFM 3.0 outputs;
+re-run them to reproduce the results or evaluate your own data.
 
 ```powershell
+$env:PYTHONUTF8 = "1"
 uv run jupyter nbconvert --to notebook --execute --inplace notebooks/01_superstore_demand_forecast.ipynb
 uv run jupyter nbconvert --to notebook --execute --inplace notebooks/02_online_retail_ii_demand_forecast.ipynb
 ```
@@ -104,7 +119,7 @@ uv run jupytext --to ipynb notebooks/02_online_retail_ii_demand_forecast.py
 | `HF_TOKEN` missing | Accept the checkpoint terms on Hugging Face and expose `HF_TOKEN` to the current process. |
 | TLS certificate verification fails | Configure the organization’s trusted root certificate. Do not disable TLS verification. |
 | Model download is slow | Let the first download complete; Hugging Face caches the checkpoint locally. |
-| A notebook shows no results | This is expected after migration. Re-execute it before making performance claims. |
+| A notebook shows no results | Re-execute it before making performance claims. |
 
 ## Data and references
 
