@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in **Demand Forecasting for Inventory Planning**. This repository is a tutorial-style forecasting project with PyCaret time-series surveys and a CUDA-only Google TimesFM 3.0 baseline. Contributions that improve correctness, reproducibility, documentation, or teaching clarity are welcome.
+Thanks for your interest in Demand Forecasting for Inventory Planning. This tutorial project surveys PyCaret time-series models and includes a CUDA-only Google TimesFM 3.0 baseline. Contributions that improve correctness, reproducibility, documentation, or teaching clarity are welcome.
 
 ## Before you start
 
@@ -20,7 +20,7 @@ uv run python -m ipykernel install --user --name demand-forecast-project
 uv run python scripts/check_system.py
 ```
 
-Optional: re-execute notebooks after changes.
+Re-execute a notebook when a change affects its results.
 
 ```powershell
 $env:PYTHONUTF8 = "1"
@@ -29,7 +29,7 @@ uv run jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor
 
 Jupytext percent sources (`.py`) are the preferred place to edit analysis logic; regenerate `.ipynb` with `uv run jupytext --to ipynb notebooks/<name>.py` when needed.
 
-## What makes a good contribution
+## Contributions
 
 | Welcome | Please avoid |
 |---------|----------------|
@@ -39,7 +39,7 @@ Jupytext percent sources (`.py`) are the preferred place to edit analysis logic;
 | Faster survey paths that stay evidence-based | Fake or hard-coded “results” in executed cells |
 | Tests or small CLI helpers for metrics I/O | Unrelated refactors in the same PR |
 
-**Do not** commit:
+Do not commit:
 
 - `.venv/`
 - `data/*.zip`, `data/*.xlsx` (downloaded at runtime)
@@ -48,7 +48,7 @@ Jupytext percent sources (`.py`) are the preferred place to edit analysis logic;
 
 ## Reporting bugs
 
-Use the **Bug report** issue template. Include:
+Use the Bug report issue template. Include:
 
 - OS and `uv run python -V`
 - `pycaret`, `timesfm3`, `torch` versions, CUDA version, and GPU name
@@ -57,10 +57,10 @@ Use the **Bug report** issue template. Include:
 
 ## Suggesting features
 
-Use the **Feature request** template. Prefer changes that:
+Use the Feature request issue template. Prefer changes that:
 
-- Preserve train/test **time order**
-- Keep classical vs TimesFM comparison **fair** (same holdout, same metrics).
+- Preserve train/test time order.
+- Keep classical and TimesFM comparisons on the same holdout with the same metrics.
 - Do not present archived outputs as TimesFM 3.0 results.
 - Stay honest about limitations
 
@@ -76,7 +76,7 @@ Use the **Feature request** template. Prefer changes that:
 
 Maintainers may ask for smaller diffs or additional evidence from a real run.
 
-## Code style (lightweight)
+## Code style
 
 - Python 3.13.13, type hints on non-trivial public helpers
 - Prefer `pathlib`, f-strings, and explicit errors
@@ -85,4 +85,4 @@ Maintainers may ask for smaller diffs or additional evidence from a real run.
 
 ## Questions
 
-Open a **Question** issue, or a blank issue if the templates do not fit. For dataset licensing, cite the UCI, Superstore, and TimesFM terms separately from the MIT code license in the README. TimesFM 3.0 weights are restricted to non-commercial, non-production use.
+Open a Question issue, or a blank issue if the templates do not fit. For dataset licensing, cite the UCI, Superstore, and TimesFM terms separately from the MIT code license in the README. TimesFM 3.0 weights are restricted to non-commercial, non-production use.

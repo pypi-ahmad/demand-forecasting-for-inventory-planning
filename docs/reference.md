@@ -1,12 +1,12 @@
 # Python reference
 
-The root package exposes the baseline evaluation surface:
+The root package exposes these baseline functions:
 
 ```python
 from demand_forecast import forecast_metrics, metrics_table, run_production_bakeoff
 ```
 
-All forecast inputs are expected to represent unit demand in time order.
+Pass unit-demand series in time order.
 
 ## `run_production_bakeoff`
 

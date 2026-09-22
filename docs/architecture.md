@@ -1,7 +1,7 @@
 # Architecture and evaluation model
 
-This project is a Windows-native tutorial and evaluation workspace for
-univariate unit-demand forecasting. It compares a bounded classical shortlist
+This Windows project evaluates univariate unit-demand forecasts. It compares a
+small classical shortlist
 with a CUDA-only TimesFM 3.0 zero-shot baseline on the same time-ordered
 holdout.
 
@@ -19,8 +19,8 @@ flowchart LR
     G --> H[Leaderboard, rolling-origin rows, and CSV artifacts]
 ```
 
-The notebooks own source acquisition, cleaning, aggregation, plots, and
-artifact writing. The `demand_forecast` package owns reusable forecast,
+The notebooks handle source acquisition, cleaning, aggregation, plots, and
+artifact writing. The `demand_forecast` package provides reusable forecast,
 metric, and bake-off logic.
 
 ## Runtime boundary
@@ -53,9 +53,8 @@ boundary.
 6. Select the reported champion by final-holdout MASE and produce
    rolling-origin rows for the classical and TimesFM candidates.
 
-The final holdout remains an evaluation artifact. It is useful for the
-tutorial and result record, but it is not a production model-selection policy
-for unseen future data.
+The final holdout is an evaluation artifact for the tutorial and result record.
+It is not a production model-selection policy for unseen future data.
 
 ## Extension modules
 
@@ -67,7 +66,7 @@ TimesFM 3.0 baseline; re-run them before treating their output as evidence.
 
 ## Artifacts and history
 
-- `data/results/` contains the current executed 01/02 production leaderboards.
+- `data/results/` contains the current executed `01` and `02` production leaderboards.
 - `notebooks/01_*` and `notebooks/02_*` contain the matching executed outputs.
 - `docs/archive/` preserves older TimesFM 2.5 material and must not be read as
   TimesFM 3.0 performance.

@@ -1,8 +1,8 @@
 # Historical TimesFM 2.5 results
 
-This document preserves the TimesFM 2.5 benchmark record that was current
-before the TimesFM 3.0 migration on 2026-09-22. It is an audit artifact, not a
-benchmark for the current runtime.
+This document preserves the TimesFM 2.5 benchmark record from before the
+TimesFM 3.0 migration on 2026-09-22. It is an audit artifact and does not
+support performance claims for the current runtime.
 
 The source code, notebook outputs, and README tables that produced these
 figures are available at commit
@@ -10,7 +10,7 @@ figures are available at commit
 That revision used `google/timesfm-2.5-200m-pytorch` through the older
 `TimesFM_2p5_200M_torch` API on the same RTX 4060 workstation.
 
-## What these results mean
+## Scope
 
 - They are zero-shot TimesFM 2.5 results on the historical Superstore and
   Online Retail II notebook runs.
@@ -28,8 +28,8 @@ That revision used `google/timesfm-2.5-200m-pytorch` through the older
 | Superstore | TimesFM 2.5 zero-shot | 78.84 | 93.50 | 18.39% | 1.316 |
 | Online Retail II | TimesFM 2.5 zero-shot | 31,732 | 40,347 | 16.88% | 0.793 |
 
-The linked source revision remains the authoritative record for the full
-leaderboards, rolling-origin outputs, figures, and later pipeline generations.
+The linked source revision contains the full leaderboards, rolling-origin
+outputs, figures, and later pipeline generations.
 Keeping the detailed artifacts there avoids copying old execution output into
 the current TimesFM 3.0 tutorial.
 

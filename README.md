@@ -1,13 +1,12 @@
 # Demand Forecasting for Inventory Planning
 
 Tutorial notebooks and a small Python package for comparing classical demand
-forecasts with a zero-shot TimesFM 3.0 baseline. The project is designed for
-reproducible, time-ordered evaluation rather than a claim that one model wins
-every dataset.
+forecasts with a zero-shot TimesFM 3.0 baseline. It uses reproducible,
+time-ordered evaluation.
 
 ## Current TimesFM runtime
 
-The active foundation-model path uses the official
+The foundation-model path uses the official
 [`google-research/timesfm` v3.0.2](https://github.com/google-research/timesfm/tree/v3.0.2)
 source release and the `google/timesfm-3.0-pytorch` checkpoint. The adapter is
 univariate, zero-shot, CUDA-only, and returns a point forecast with q10–q90
@@ -36,7 +35,7 @@ the full inputs, figures, and diagnostics.
 
 On these single aggregate series, the selected classical model won the final
 holdout. TimesFM 3.0 produced the best mean rolling-origin MASE on Online
-Retail II (0.498). These are dataset-specific outcomes, not a general ranking.
+Retail II (0.498). These results apply to these datasets only.
 
 ## Requirements
 
@@ -46,9 +45,8 @@ Retail II (0.498). These are dataset-specific outcomes, not a general ranking.
   in the process environment
 - Network access for the first model download and source datasets
 
-The checked-in lockfile selects CUDA 13.2 PyTorch wheels. CPU fallback is
-deliberately disabled: a missing CUDA device is a preflight failure, not a
-slower execution mode.
+The checked-in lockfile selects CUDA 13.2 PyTorch wheels. CPU execution is
+disabled. A missing CUDA device is a preflight failure.
 
 ## Install and check
 
@@ -71,7 +69,7 @@ uv run python scripts/check_system.py --json
 
 ## Forecast workflow
 
-The public adapter remains `forecast_timesfm(train, h, max_context=...)`.
+Use the public `forecast_timesfm(train, h, max_context=...)` adapter.
 It loads the checkpoint once per process and returns `TimesFMForecast` with:
 
 - `point`: the non-negative median forecast

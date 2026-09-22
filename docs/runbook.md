@@ -1,7 +1,7 @@
 # Operator runbook
 
-Use this runbook to reproduce the current baseline or diagnose its runtime.
-It applies to the CUDA-only TimesFM 3.0 path on Windows.
+This runbook covers reproducing the baseline and diagnosing its runtime. It
+applies to the CUDA-only TimesFM 3.0 path on Windows.
 
 ## Prepare the environment
 
